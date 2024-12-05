@@ -1,5 +1,6 @@
 #include <iostream>
 #include <random>
+#include <optional>
 #include "defines.h"
 
 #ifndef RECORD_H
@@ -20,5 +21,7 @@ public:
     bool operator>(const Record &other) const;
     bool operator<(const Record &other) const;
 };
+
+typedef std::optional<Record> OptionalRecord;
 
 #endif // RECORD_H

@@ -101,13 +101,19 @@ void CommandLine::handleHelp(const std::vector<std::string> &args)
 
 void CommandLine::loadTestFile(const std::vector<std::string> &args)
 {
-    if (args.size() != 2)
+    if (args.size() > 2)
     {
-        std::cout << "Argument error: Wrong amount of arguments, needs a string.\n";
+        std::cout << "Argument error: Wrong amount of arguments, at most 1.\n";
         return;
     }
 
-    std::fstream file(args[1], std::ios::in);
+    std::string testFilename = "test.txt";
+    if (args.size() == 2)
+    {
+        testFilename = args[1];
+    }
+
+    std::fstream file(testFilename, std::ios::in);
     if (!isFileOpenedCorrectly(file))
     {
         return;
@@ -179,7 +185,7 @@ void CommandLine::searchRecord(const std::vector<std::string> &args)
 
     int key = std::stoi(args[1]);
 
-    std::optional<Record> result = btreeHandler->searchRecord(key);
+    OptionalRecord result = btreeHandler->searchRecord(key);
     if (result == std::nullopt)
     {
         std::cout << "Result: NOT FOUND\n";

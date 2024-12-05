@@ -18,8 +18,8 @@ void IndexBlockIO::readBlock()
 
 int IndexBlockIO::readPageAt(int offset, BtreePage &page)
 {
-    int newBlockIndex = offset / RECORD_BLOCK_COUNT;
-    blockIndex = (offset % RECORD_BLOCK_COUNT) * RECORD_SIZE_IN_BYTES;
+    int newBlockIndex = offset;
+    blockIndex = 0;
 
     if (newBlockIndex != currentBlockIndex)
     {
@@ -34,6 +34,7 @@ int IndexBlockIO::readPageAt(int offset, BtreePage &page)
     }
 
     BtreePage retObj = BtreePage::deserialize(block);
+    retObj.setThisPageOffset(offset);
     page = std::move(retObj);
 
     return BLOCK_OPERATION_SUCCESSFUL;
@@ -41,8 +42,8 @@ int IndexBlockIO::readPageAt(int offset, BtreePage &page)
 
 int IndexBlockIO::writePageAt(int offset, const BtreePage &page)
 {
-    int newBlockIndex = offset / RECORD_BLOCK_COUNT;
-    blockIndex = (offset % RECORD_BLOCK_COUNT) * RECORD_SIZE_IN_BYTES;
+    int newBlockIndex = offset;
+    blockIndex = 0;
 
     if (newBlockIndex != currentBlockIndex)
     {

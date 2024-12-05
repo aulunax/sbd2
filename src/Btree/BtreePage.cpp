@@ -10,17 +10,44 @@ BtreePage::BtreePage(int parentOffset, std::vector<BtreeNode> nodes)
 
 void BtreePage::addNode(BtreeNode node)
 {
-    if (nodes.size() == BTREE_MAX_CHILDREN)
+    if (nodes.size() == BTREE_MAX_CHILDREN + 1)
     {
-        std::cerr << "Error: Page is full, cannot add more nodes\n";
+        std::cout << "Error: Page is full, cannot add more nodes\n";
         return;
     }
     nodes.push_back(node);
 }
 
+void BtreePage::insertNode(BtreeNode node)
+{
+    std::pair<int, bool> result = bisectionSearchForKey(node.key);
+    if (result.second)
+    {
+        throw std::invalid_argument("This should never happen");
+        return;
+    }
+
+    nodes.insert(nodes.begin() + result.first + 1, node);
+}
+
+void BtreePage::clearNodes()
+{
+    nodes.clear();
+}
+
 int BtreePage::getRecordsOnPageCount() const
 {
     return nodes.size() - 1;
+}
+
+int BtreePage::getParentOffset() const
+{
+    return parentOffset;
+}
+
+void BtreePage::setParentOffset(int parentOffset)
+{
+    this->parentOffset = parentOffset;
 }
 
 BtreeNode BtreePage::getNode(int index) const
@@ -37,6 +64,42 @@ int BtreePage::getKey(int index) const
     if (index + 1 < nodes.size())
     {
         return nodes[index + 1].key;
+    }
+    throw std::invalid_argument("Index out of bounds");
+}
+
+void BtreePage::setKey(int index, int value)
+{
+    if (index + 1 < nodes.size())
+    {
+        nodes[index + 1].key = value;
+    }
+    throw std::invalid_argument("Index out of bounds");
+}
+
+int BtreePage::getPtr(int index) const
+{
+    if (index < nodes.size())
+    {
+        return nodes[index].key;
+    }
+    throw std::invalid_argument("Index out of bounds");
+}
+
+int BtreePage::getRecordOffset(int index) const
+{
+    if (index + 1 < nodes.size())
+    {
+        return nodes[index + 1].recordOffset;
+    }
+    throw std::invalid_argument("Index out of bounds");
+}
+
+void BtreePage::setRecordOffset(int index, int value)
+{
+    if (index + 1 < nodes.size())
+    {
+        nodes[index + 1].recordOffset = value;
     }
     throw std::invalid_argument("Index out of bounds");
 }
@@ -117,4 +180,33 @@ int BtreePage::serialize(std::unique_ptr<char[]> &serializedPage) const
     }
 
     return serialIndex;
+}
+
+std::pair<int, bool> BtreePage::bisectionSearchForKey(int key)
+{
+    int left = 0, right = getRecordsOnPageCount() - 1, mid;
+
+    while (left <= right)
+    {
+        mid = left + (right - left) / 2;
+        if (getKey(mid) == key)
+        {
+            return {mid + 1, true};
+        }
+        else if (getKey(mid) < key)
+        {
+            left = mid + 1;
+        }
+        else
+        {
+            right = mid - 1;
+        }
+    }
+
+    return {left, false};
+}
+
+std::vector<BtreeNode> &BtreePage::getNodes()
+{
+    return nodes;
 }

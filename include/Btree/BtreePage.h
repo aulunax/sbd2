@@ -8,7 +8,7 @@ class BtreePage
 {
 public:
     int parentOffset;
-
+    int thisPageOffset;
     std::vector<BtreeNode> nodes;
 
     BtreePage() {};
@@ -18,20 +18,29 @@ public:
     BtreePage(int parentOffset) : parentOffset(parentOffset) {}
     BtreePage(int parentOffset, std::vector<BtreeNode> nodes);
     void addNode(BtreeNode node);
+    void insertNode(BtreeNode node);
+    void clearNodes();
 
     int getRecordsOnPageCount() const;
     int getParentOffset() const;
+    void setParentOffset(int parentOffset);
+    int getThisPageOffset() const { return thisPageOffset; }
+    void setThisPageOffset(int thisPageOffset) { this->thisPageOffset = thisPageOffset; }
     int serialize(std::unique_ptr<char[]> &serializedPage) const;
 
-    void setParentOffset(int parentOffset);
+    std::pair<int, bool> bisectionSearchForKey(int key);
 
-    std::vector<int> getSiblingNodes(int index);
+    std::vector<BtreeNode> &getNodes();
 
     bool compensation();
     bool split();
 
     BtreeNode getNode(int index) const;
     int getKey(int index) const;
+    void setKey(int index, int value);
+    int getPtr(int index) const;
+    int getRecordOffset(int index) const;
+    void setRecordOffset(int index, int value);
 
     bool isRoot();
 

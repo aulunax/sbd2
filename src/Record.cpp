@@ -19,6 +19,14 @@ int Record::sum()
     return sum;
 }
 
+void Record::fill(int n)
+{
+    for (int i = 0; i < RECORD_INT_COUNT; i++)
+    {
+        arr[i] = n;
+    }
+}
+
 void Record::print(bool doIncludeSum)
 {
     if (doIncludeSum)

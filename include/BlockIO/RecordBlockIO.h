@@ -5,6 +5,9 @@
 #include <iostream>
 #include <memory>
 
+#ifndef RECORDBLOCKIO_H
+#define RECORDBLOCKIO_H
+
 class RecordBlockIO : public BlockInputOutput
 {
     static int allRecordBlockWrites;
@@ -31,3 +34,5 @@ public:
     RecordBlockIO(std::string filename);
     ~RecordBlockIO();
 };
+
+#endif // RECORDBLOCKIO_H

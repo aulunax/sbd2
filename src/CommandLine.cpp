@@ -1,10 +1,12 @@
 #include "CommandLine.h"
-#include "BlockIO/RecordBlockIO.h"
+#include "RecordBlockIO.h"
 #include <iostream>
 
 CommandLine::CommandLine()
 {
     srand(time(NULL));
+
+    btreeHandler = std::make_unique<BtreeHandler>(INDEXFILE_FILENAME, DATAFILE_FILENAME);
 
     commandsMap["help"] = [this](const std::vector<std::string> &args)
     { handleHelp(args); };
@@ -34,6 +36,10 @@ CommandLine::CommandLine()
     commandsMap["dblockstats"] = [this](const std::vector<std::string> &args)
     { printBlockStatistics(args); };
     commandsMap["dbs"] = commandsMap["dblockstats"];
+
+    commandsMap["insert"] = [this](const std::vector<std::string> &args)
+    { insertRecord(args); };
+    commandsMap["i"] = commandsMap["insert"];
 
     // print help message when starting the CLI
     printHelp();
@@ -228,4 +234,21 @@ bool CommandLine::isFileOpenedCorrectly(std::fstream &file)
         return false;
     }
     return true;
+}
+
+void CommandLine::insertRecord(const std::vector<std::string> &args)
+{
+    if (args.size() != 3)
+    {
+        std::cout << "Argument error: Wrong amount of arguments, needs 3.\n";
+        return;
+    }
+
+    int key = std::stoi(args[1]);
+    int value = std::stoi(args[2]);
+
+    Record record;
+    record.fill(value);
+    record.key = key;
+    btreeHandler->insertRecord(record);
 }

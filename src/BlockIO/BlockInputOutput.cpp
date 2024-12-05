@@ -56,7 +56,7 @@ BlockInputOutput::BlockInputOutput(std::string filename, int blockSize)
     : blockWrites(0), blockReads(0),
       blockIndex(0), filledBlockIndex(0), blockSize(blockSize), currentBlockIndex(-1)
 {
-    file.open(filename, std::ios::out | std::ios::in | std::ios::binary | std::ios::app);
+    file.open(filename, std::ios::out | std::ios::in | std::ios::binary | std::ios::trunc);
     if (!file.is_open() || !file.good())
     {
         throw std::runtime_error("Could not open file " + filename);

@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "defines.h"
-#include "BlockInputOutput.h"
+#include "BtreeHandler.h"
 
 const std::string HELP_MESSAGE =
     "\n  List of available commands\n"
@@ -18,7 +18,7 @@ const std::string HELP_MESSAGE =
     "  help                                   Show this help message\n"
     "  help debug                             Show help relating to debug stuff (only for debugging)\n"
     "  clear                                  Clear all the files\n"
-    "  add [Record]                           Insert record into the file\n"
+    "  insert [key] [value]                   Insert record into the file\n"
     "  addrange [n] [m]                       Insert range of records with indexes from n to m into the file\n"
     "  rand [n]                               Insert n random records into the file\n"
     "  load [filename]                        Loads records from plaintext file, numbers are space separated, each record is in a new line\n"
@@ -36,6 +36,8 @@ const std::string DEBUG_HELP_MESSAGE =
 
 class CommandLine
 {
+    std::unique_ptr<BtreeHandler> btreeHandler;
+
     bool quit = false;
 
     // helper command functions

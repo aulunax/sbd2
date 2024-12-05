@@ -1,6 +1,6 @@
 #include "Record.h"
-#include "BlockIO/RecordBlockIO.h"
-#include "BlockIO/IndexBlockIO.h"
+#include "RecordBlockIO.h"
+#include "IndexBlockIO.h"
 #include <memory>
 
 class BtreeHandler
@@ -9,6 +9,7 @@ class BtreeHandler
     std::unique_ptr<IndexBlockIO> indexFile;
 
     int getRootPageOffset();
+    void createRootPtr();
 
 public:
     BtreeHandler(std::string indexFilename, std::string dataFilename);

@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.5.0)
 project(Sbd2 VERSION 0.1.0 LANGUAGES C CXX)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_SOURCE_DIR}/include/BlockIO)
+include_directories(${PROJECT_SOURCE_DIR}/include/Btree)
 
 set(SOURCES
     ${PROJECT_SOURCE_DIR}/main.cpp

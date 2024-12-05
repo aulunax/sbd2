@@ -1,4 +1,4 @@
-#include "BlockIO/RecordBlockIO.h"
+#include "RecordBlockIO.h"
 #include <cstring>
 
 int RecordBlockIO::allRecordBlockWrites = 0;

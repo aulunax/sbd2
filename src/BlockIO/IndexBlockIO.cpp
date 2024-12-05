@@ -1,4 +1,4 @@
-#include "BlockIO/IndexBlockIO.h"
+#include "IndexBlockIO.h"
 
 int IndexBlockIO::allIndexBlockWrites = 0;
 int IndexBlockIO::allIndexBlockReads = 0;

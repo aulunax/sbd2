@@ -1,6 +1,6 @@
 #include "defines.h"
-#include "BlockIO/BlockInputOutput.h"
-#include "Btree/BtreePage.h"
+#include "BlockInputOutput.h"
+#include "BtreePage.h"
 
 class IndexBlockIO : public BlockInputOutput
 {

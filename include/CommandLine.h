@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "defines.h"
-#include "BlockIO/BlockInputOutput.h"
+#include "BlockInputOutput.h"
 
 const std::string HELP_MESSAGE =
     "\n  List of available commands\n"

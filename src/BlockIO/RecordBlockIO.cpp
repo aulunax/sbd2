@@ -1,11 +1,22 @@
-#include "RecordBlockIO.h"
-
+#include "BlockIO/RecordBlockIO.h"
 #include <cstring>
 
 int RecordBlockIO::allRecordBlockWrites = 0;
 int RecordBlockIO::allRecordBlockReads = 0;
 
-Record RecordBlockIO::readRecordAt(int offset)
+void RecordBlockIO::writeBlock()
+{
+    BlockInputOutput::writeBlock();
+    allRecordBlockWrites++;
+}
+
+void RecordBlockIO::readBlock()
+{
+    BlockInputOutput::readBlock();
+    allRecordBlockReads++;
+}
+
+int RecordBlockIO::readRecordAt(int offset, Record &record)
 {
     int newBlockIndex = offset / RECORD_BLOCK_COUNT;
     blockIndex = (offset % RECORD_BLOCK_COUNT) * RECORD_SIZE_IN_BYTES;
@@ -19,13 +30,8 @@ Record RecordBlockIO::readRecordAt(int offset)
 
     if (filledBlockIndex <= blockIndex)
     {
-        throw std::runtime_error("Block index is beyond the block");
+        return BLOCK_OPERATION_FAILED;
     }
-
-    Record record;
-
-    record.key = *reinterpret_cast<int *>(block.get() + blockIndex);
-    blockIndex += sizeof(int);
 
     for (int i = 0; i < RECORD_INT_COUNT; i++)
     {
@@ -33,16 +39,20 @@ Record RecordBlockIO::readRecordAt(int offset)
         blockIndex += sizeof(int);
     }
 
-    return record;
+    return BLOCK_OPERATION_SUCCESSFUL;
 }
 
-void RecordBlockIO::writeRecordAt(int offset, const Record &record)
+int RecordBlockIO::writeRecordAt(int offset, const Record &record)
 {
     int newBlockIndex = offset / RECORD_BLOCK_COUNT;
     blockIndex = (offset % RECORD_BLOCK_COUNT) * RECORD_SIZE_IN_BYTES;
 
     if (newBlockIndex != currentBlockIndex)
     {
+        if (modifiedBlock)
+        {
+            writeBlock();
+        }
         currentBlockIndex = newBlockIndex;
         readBlockAt(currentBlockIndex);
         readBlock();
@@ -56,8 +66,7 @@ void RecordBlockIO::writeRecordAt(int offset, const Record &record)
         isBlockFilled = false;
     }
 
-    memcpy(block.get() + blockIndex, &record.key, sizeof(int));
-    blockIndex += sizeof(int);
+    modifiedBlock = true;
 
     for (int i = 0; i < RECORD_INT_COUNT; i++)
     {
@@ -74,11 +83,24 @@ void RecordBlockIO::writeRecordAt(int offset, const Record &record)
         }
     }
 
-    writeBlock();
+    return BLOCK_OPERATION_SUCCESSFUL;
+}
+
+int RecordBlockIO::writeRecordAtEnd(const Record &record)
+{
+    // writeBlockAtEnd();
+    return BLOCK_OPERATION_SUCCESSFUL;
 }
 
 RecordBlockIO::RecordBlockIO(std::string filename)
     : BlockInputOutput(filename, RECORD_BLOCK_SIZE)
 {
-    block = std::make_unique<char[]>(blockSize);
+}
+
+RecordBlockIO::~RecordBlockIO()
+{
+    if (modifiedBlock)
+    {
+        allRecordBlockWrites++;
+    }
 }

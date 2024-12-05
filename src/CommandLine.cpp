@@ -1,5 +1,5 @@
 #include "CommandLine.h"
-#include "RecordBlockIO.h"
+#include "BlockIO/RecordBlockIO.h"
 #include <iostream>
 
 CommandLine::CommandLine()
@@ -30,6 +30,10 @@ CommandLine::CommandLine()
     commandsMap["dcleartest"] = [this](const std::vector<std::string> &args)
     { clearTestFile(args); };
     commandsMap["dct"] = commandsMap["dcleartest"];
+
+    commandsMap["dblockstats"] = [this](const std::vector<std::string> &args)
+    { printBlockStatistics(args); };
+    commandsMap["dbs"] = commandsMap["dblockstats"];
 
     // print help message when starting the CLI
     printHelp();
@@ -152,14 +156,19 @@ void CommandLine::addRawRecordToFile(const std::vector<std::string> &args)
 
     int recordCount = std::stoi(args[1]);
 
-    RecordBlockIO file("test.bin");
+    RecordBlockIO file(TEST_FILENAME);
 
     for (int i = 0; i < recordCount; i++)
     {
         Record record;
         record.Randomize();
-        file.writeRecordAt(i, record);
+        if (!file.writeRecordAt(i, record))
+        {
+            std::cout << "Error: Could not write record at offset " << i << "\n";
+        }
     }
+
+    std::cout << "Added " << recordCount << " records to the file\n";
 }
 
 void CommandLine::readRawRecordToFile(const std::vector<std::string> &args)
@@ -174,7 +183,12 @@ void CommandLine::readRawRecordToFile(const std::vector<std::string> &args)
 
     RecordBlockIO file(TEST_FILENAME);
 
-    Record record = file.readRecordAt(n);
+    Record record;
+    if (!file.readRecordAt(n, record))
+    {
+        std::cout << "Error: Could not read record at offset " << n << "\n";
+        return;
+    }
 
     std::cout << record.toString() << std::endl;
 }
@@ -188,6 +202,16 @@ void CommandLine::clearTestFile(const std::vector<std::string> &args)
         return;
     }
     file.close();
+
+    std::cout << "Test file cleared\n";
+}
+
+void CommandLine::printBlockStatistics(const std::vector<std::string> &args)
+{
+    std::cout << "Block reads: " << BlockInputOutput::getAllBlockReads() << "\n";
+    std::cout << "Block writes: " << BlockInputOutput::getAllBlockWrites() << "\n";
+    std::cout << "Record block reads: " << RecordBlockIO::getAllRecordBlockReads() << "\n";
+    std::cout << "Record block writes: " << RecordBlockIO::getAllRecordBlockWrites() << "\n";
 }
 
 bool CommandLine::isFileOpenedCorrectly(std::fstream &file)

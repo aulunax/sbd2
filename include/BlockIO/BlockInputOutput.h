@@ -34,17 +34,20 @@ protected:
     std::unique_ptr<char[]> block;
     int filledBlockIndex;
     int blockIndex;
+    bool modifiedBlock = false;
 
     bool isFinished = false;
 
     /// @brief Writes the current block to the file
-    void writeBlock();
+    virtual void writeBlock();
 
     /// @brief Reads the next block from the file
-    void readBlock();
+    virtual void readBlock();
 
     void readBlockAt(int blockOffset);
     void writeBlockAt(int blockOffset);
+
+    void writeBlockAtEnd();
 
 public:
     std::fstream *getRawFileStreamPtr();

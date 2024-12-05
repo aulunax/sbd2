@@ -6,8 +6,11 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 set(SOURCES
     ${PROJECT_SOURCE_DIR}/main.cpp
     ${PROJECT_SOURCE_DIR}/src/CommandLine.cpp
-    ${PROJECT_SOURCE_DIR}/src/BlockInputOutput.cpp
-    ${PROJECT_SOURCE_DIR}/src/RecordBlockIO.cpp
+    ${PROJECT_SOURCE_DIR}/src/BlockIO/BlockInputOutput.cpp
+    ${PROJECT_SOURCE_DIR}/src/BlockIO/IndexBlockIO.cpp
+    ${PROJECT_SOURCE_DIR}/src/BlockIO/RecordBlockIO.cpp
+    ${PROJECT_SOURCE_DIR}/src/Btree/BtreeNode.cpp
+    ${PROJECT_SOURCE_DIR}/src/Btree/BtreePage.cpp
     ${PROJECT_SOURCE_DIR}/src/Record.cpp
 )
 

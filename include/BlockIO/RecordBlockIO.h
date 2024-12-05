@@ -1,4 +1,4 @@
-#include "BlockInputOutput.h"
+#include "BlockIO/BlockInputOutput.h"
 #include "Record.h"
 #include "defines.h"
 
@@ -10,9 +10,13 @@ class RecordBlockIO : public BlockInputOutput
     static int allRecordBlockWrites;
     static int allRecordBlockReads;
 
+    void writeBlock() override;
+    void readBlock() override;
+
 public:
-    Record readRecordAt(int offset);
-    void writeRecordAt(int offset, const Record &record);
+    int readRecordAt(int offset, Record &record);
+    int writeRecordAt(int offset, const Record &record);
+    int writeRecordAtEnd(const Record &record);
 
     static int getAllRecordBlockWrites()
     {
@@ -25,4 +29,5 @@ public:
     }
 
     RecordBlockIO(std::string filename);
+    ~RecordBlockIO();
 };

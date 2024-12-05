@@ -7,18 +7,31 @@
 // Record defines
 #define RECORD_INT_COUNT 10 // do not change
 #define MAX_KEY_VALUE 100000
-#define RECORD_SIZE_IN_BYTES 44
+#define RECORD_SIZE_IN_BYTES 40
+
+// B tree definies
+#define BTREE_D_FACTOR 4
+#define BTREE_MAX_CHILDREN 2 * BTREE_D_FACTOR
+#define BTREE_MIN_CHILDREN BTREE_D_FACTOR
+
+#define BTREE_HEADER_SIZE_IN_BYTES 2 * sizeof(int)
+#define BTREE_PAGE_MAX_SIZE_IN_BYTES 3 * BTREE_MAX_CHILDREN * sizeof(int) + 1 + BTREE_HEADER_SIZE_IN_BYTES
 
 // Block defines
 #define RECORD_BLOCK_COUNT 8
 #define RECORD_BLOCK_SIZE RECORD_SIZE_IN_BYTES *RECORD_BLOCK_COUNT // in bytes
 
-// B tree definies
-#define BTREE_D_FACTOR 4
+#define BTREE_PAGE_BLOCK_COUNT 1
+
+#define BLOCK_OPERATION_SUCCESSFUL 1
+#define BLOCK_OPERATION_FAILED 0
 
 // Main program file names
-#define DISKFILE_FILENAME "disk.bin"
-#define DISKFILE_PLAINTEXT_FILENAME "disk.txt"
+#define DATAFILE_FILENAME "data.bin"
+#define DATAFILE_PLAINTEXT_FILENAME "data.txt"
+
+#define INDEXFILE_FILENAME "index.bin"
+#define INDEXFILE_PLAINTEXT_FILENAME "index.txt"
 
 // Debug file names
 #define TEST_FILENAME "test.bin"

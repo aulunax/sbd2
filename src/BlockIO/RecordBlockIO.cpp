@@ -83,6 +83,11 @@ int RecordBlockIO::writeRecordAt(int offset, const Record &record)
         }
     }
 
+    if (filledBlockIndex <= blockIndex)
+    {
+        filledBlockIndex = blockIndex;
+    }
+
     return BLOCK_OPERATION_SUCCESSFUL;
 }
 

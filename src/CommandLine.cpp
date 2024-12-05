@@ -37,9 +37,21 @@ CommandLine::CommandLine()
     { printBlockStatistics(args); };
     commandsMap["dbs"] = commandsMap["dblockstats"];
 
+    commandsMap["dforceflush"] = [this](const std::vector<std::string> &args)
+    { forceFlush(args); };
+    commandsMap["dff"] = commandsMap["dforceflush"];
+
     commandsMap["insert"] = [this](const std::vector<std::string> &args)
     { insertRecord(args); };
     commandsMap["i"] = commandsMap["insert"];
+
+    commandsMap["search"] = [this](const std::vector<std::string> &args)
+    { searchRecord(args); };
+    commandsMap["s"] = commandsMap["search"];
+
+    commandsMap["clear"] = [this](const std::vector<std::string> &args)
+    { clearFiles(args); };
+    commandsMap["c"] = commandsMap["clear"];
 
     // print help message when starting the CLI
     printHelp();
@@ -104,18 +116,23 @@ void CommandLine::loadTestFile(const std::vector<std::string> &args)
     std::string command;
     std::vector<std::string> commandArgs;
 
-    handleInput(file);
+    handleInput(file, true);
 
     file.close();
 }
 
-void CommandLine::handleInput(std::istream &input)
+void CommandLine::handleInput(std::istream &input, bool isTestFile)
 {
     std::string command;
     std::vector<std::string> args;
 
     while (!quit && std::getline(input, command))
     {
+        if (isTestFile)
+        {
+            std::cout << command << "\n";
+        }
+
         args.clear();
         std::istringstream stream(command);
         std::string word;
@@ -149,6 +166,27 @@ void CommandLine::handleInput(std::istream &input)
         {
             std::cout << "Unknown command: '" + args[0] + "'\nType 'help' to list all available commands.\n";
         }
+    }
+}
+
+void CommandLine::searchRecord(const std::vector<std::string> &args)
+{
+    if (args.size() != 2)
+    {
+        std::cout << "Argument error: Wrong amount of arguments, needs 2.\n";
+        return;
+    }
+
+    int key = std::stoi(args[1]);
+
+    std::optional<Record> result = btreeHandler->searchRecord(key);
+    if (result == std::nullopt)
+    {
+        std::cout << "Result: NOT FOUND\n";
+    }
+    else
+    {
+        std::cout << "Result: " << result->toString() << "\n";
     }
 }
 
@@ -218,6 +256,14 @@ void CommandLine::printBlockStatistics(const std::vector<std::string> &args)
     std::cout << "Block writes: " << BlockInputOutput::getAllBlockWrites() << "\n";
     std::cout << "Record block reads: " << RecordBlockIO::getAllRecordBlockReads() << "\n";
     std::cout << "Record block writes: " << RecordBlockIO::getAllRecordBlockWrites() << "\n";
+    std::cout << "Index block reads: " << IndexBlockIO::getAllIndexBlockReads() << "\n";
+    std::cout << "Index block writes: " << IndexBlockIO::getAllIndexBlockWrites() << "\n";
+}
+
+void CommandLine::forceFlush(const std::vector<std::string> &args)
+{
+    btreeHandler->forceFlush();
+    std::cout << "Files flushed\n";
 }
 
 bool CommandLine::isFileOpenedCorrectly(std::fstream &file)
@@ -234,6 +280,12 @@ bool CommandLine::isFileOpenedCorrectly(std::fstream &file)
         return false;
     }
     return true;
+}
+
+void CommandLine::clearFiles(const std::vector<std::string> &args)
+{
+    btreeHandler = std::make_unique<BtreeHandler>(INDEXFILE_FILENAME, DATAFILE_FILENAME);
+    std::cout << "Files cleared successfully\n";
 }
 
 void CommandLine::insertRecord(const std::vector<std::string> &args)

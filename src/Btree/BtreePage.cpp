@@ -75,7 +75,7 @@ BtreePage BtreePage::deserialize(const std::unique_ptr<char[]> &serializedPage)
         int pagePtr = *reinterpret_cast<int *>(serializedPage.get() + serialIndex);
         serialIndex += sizeof(int);
 
-        retObj.addNode(BtreeNode(pagePtr, recordOffset, key));
+        retObj.addNode(BtreeNode(pagePtr, key, recordOffset));
     }
 
     return retObj;

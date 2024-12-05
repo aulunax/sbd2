@@ -7,8 +7,8 @@ class IndexBlockIO : public BlockInputOutput
     static int allIndexBlockWrites;
     static int allIndexBlockReads;
 
-    // void writeBlock() override;
-    // void readBlock() override;
+    void writeBlock() override;
+    void readBlock() override;
 
 public:
     int readPageAt(int offset, BtreePage &page);

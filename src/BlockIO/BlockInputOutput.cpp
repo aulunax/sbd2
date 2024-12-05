@@ -78,6 +78,14 @@ BlockInputOutput::~BlockInputOutput()
     finish();
 }
 
+void BlockInputOutput::flush()
+{
+    if (modifiedBlock)
+    {
+        writeBlock();
+    }
+}
+
 void BlockInputOutput::finish()
 {
     if (file.is_open())

@@ -6,6 +6,12 @@ BtreeHandler::BtreeHandler(std::string indexFilename, std::string dataFilename)
     indexFile = std::make_unique<IndexBlockIO>(indexFilename);
 }
 
+void BtreeHandler::forceFlush()
+{
+    dataFile->flush();
+    indexFile->flush();
+}
+
 std::optional<Record> BtreeHandler::searchRecord(int key)
 {
     if (rootPagePtr == NULL_DATA)
@@ -13,21 +19,32 @@ std::optional<Record> BtreeHandler::searchRecord(int key)
         return std::nullopt;
     }
 
+    int currentPagePtr = rootPagePtr;
     BtreePage currentPage;
-    int status = indexFile->readPageAt(rootPagePtr, currentPage);
-    if (status == BLOCK_OPERATION_FAILED)
-    {
-        throw std::runtime_error("Error: Could not read page at offset " + std::to_string(rootPagePtr));
-    }
 
-    std::pair<int, bool> bisectionResult;
-    bisectionResult = bisectionSearchForKey(currentPage, key);
-    if (bisectionResult.second)
+    while (currentPagePtr != NULL_DATA)
     {
-        int recordOffset =
-            currentPage.getNode(bisectionResult.first).recordOffset;
+        int status = indexFile->readPageAt(currentPagePtr, currentPage);
+        if (status == BLOCK_OPERATION_FAILED)
+        {
+            throw std::runtime_error("Error: Could not read page at offset " + std::to_string(rootPagePtr));
+        }
 
-        return fetchRecord(recordOffset);
+        std::pair<int, bool> bisectionResult;
+        bisectionResult = bisectionSearchForKey(currentPage, key);
+        if (bisectionResult.second)
+        {
+            int recordOffset =
+                currentPage.getNode(bisectionResult.first).recordOffset;
+
+            Record result = fetchRecord(recordOffset);
+            result.key = key;
+            return result;
+        }
+        else
+        {
+            currentPagePtr = currentPage.getNode(bisectionResult.first).pagePtr;
+        }
     }
 
     return std::nullopt;
@@ -44,6 +61,7 @@ void BtreeHandler::insertRecord(const Record &record)
         dataLastRecordOffset++;
         indexFile->writePageAt(indexLastPageOffset, rootPageStructure);
         indexLastPageOffset++;
+        rootPagePtr = 0;
     }
 }
 
@@ -68,7 +86,7 @@ std::pair<int, bool> BtreeHandler::bisectionSearchForKey(const BtreePage &page, 
         }
     }
 
-    return {left + 1, false};
+    return {left, false};
 }
 
 Record BtreeHandler::fetchRecord(int offset)

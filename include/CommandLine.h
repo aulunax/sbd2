@@ -19,12 +19,8 @@ const std::string HELP_MESSAGE =
     "  help debug                             Show help relating to debug stuff (only for debugging)\n"
     "  clear                                  Clear all the files\n"
     "  insert [key] [value]                   Insert record into the file\n"
-    "  addrange [n] [m]                       Insert range of records with indexes from n to m into the file\n"
-    "  rand [n]                               Insert n random records into the file\n"
-    "  load [filename]                        Loads records from plaintext file, numbers are space separated, each record is in a new line\n"
-    "  loadtest [filename]                    Loads test commands from a file\n"
-    "  print [all|data|index]                 Prints content of the files\n"
-    "  save [filename] [all|data|index]       Saves content of files to a plaintext file\n";
+    "  search [key]                           Search for record with given key\n"
+    "  loadtest [filename]                    Loads test commands from a file\n";
 
 const std::string DEBUG_HELP_MESSAGE =
     "\n  List of available debug commands\n"
@@ -32,6 +28,7 @@ const std::string DEBUG_HELP_MESSAGE =
     "  dcleartest                                Clears the test file\n"
     "  dblockstats                               Prints block stats\n"
     "  drandrecord [n]                           Add n random records to a file\n"
+    "  dforceflush                               Forces a flush of the files\n"
     "  dgetrecord [n]                            Gets a record at offset n\n";
 
 class CommandLine
@@ -55,12 +52,14 @@ class CommandLine
     void insertRandomRecords(const std::vector<std::string> &args);
     void insertRecordsRange(const std::vector<std::string> &args);
     void readRecord(const std::vector<std::string> &args);
+    void searchRecord(const std::vector<std::string> &args);
 
     // debug commands
     void addRawRecordToFile(const std::vector<std::string> &args);
     void readRawRecordToFile(const std::vector<std::string> &args);
     void clearTestFile(const std::vector<std::string> &args);
     void printBlockStatistics(const std::vector<std::string> &args);
+    void forceFlush(const std::vector<std::string> &args);
 
     // actual private functions
     bool isFileOpenedCorrectly(std::fstream &file);
@@ -73,5 +72,5 @@ public:
     CommandLine();
 
     /// @brief Starts the CLI
-    void handleInput(std::istream &input = std::cin);
+    void handleInput(std::istream &input = std::cin, bool isTestFile = false);
 };

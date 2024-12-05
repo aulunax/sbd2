@@ -22,6 +22,7 @@ public:
 
     BtreeHandler(std::string indexFilename, std::string dataFilename);
 
+    void forceFlush();
     std::optional<Record> searchRecord(int key);
     void insertRecord(const Record &record);
 };

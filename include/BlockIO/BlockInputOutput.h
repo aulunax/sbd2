@@ -52,6 +52,7 @@ protected:
 public:
     std::fstream *getRawFileStreamPtr();
 
+    void flush();
     void finish();
     bool isDone()
     {

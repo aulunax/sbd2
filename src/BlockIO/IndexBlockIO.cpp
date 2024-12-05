@@ -4,6 +4,18 @@
 int IndexBlockIO::allIndexBlockWrites = 0;
 int IndexBlockIO::allIndexBlockReads = 0;
 
+void IndexBlockIO::writeBlock()
+{
+    BlockInputOutput::writeBlock();
+    allIndexBlockWrites++;
+}
+
+void IndexBlockIO::readBlock()
+{
+    BlockInputOutput::readBlock();
+    allIndexBlockReads++;
+}
+
 int IndexBlockIO::readPageAt(int offset, BtreePage &page)
 {
     int newBlockIndex = offset / RECORD_BLOCK_COUNT;
@@ -45,12 +57,6 @@ int IndexBlockIO::writePageAt(int offset, const BtreePage &page)
 
     writeBlockAt(currentBlockIndex);
 
-    bool isBlockFilled = true;
-    if (filledBlockIndex <= blockIndex)
-    {
-        isBlockFilled = false;
-    }
-
     modifiedBlock = true;
 
     std::unique_ptr<char[]> serializedPage;
@@ -62,6 +68,11 @@ int IndexBlockIO::writePageAt(int offset, const BtreePage &page)
     }
 
     memcpy(block.get() + blockIndex, serializedPage.get(), bytes);
+
+    if (blockIndex + bytes > filledBlockIndex)
+    {
+        filledBlockIndex = blockIndex + bytes;
+    }
 
     return BLOCK_OPERATION_SUCCESSFUL;
 }

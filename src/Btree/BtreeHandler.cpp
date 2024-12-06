@@ -26,11 +26,7 @@ OptionalRecord BtreeHandler::searchRecord(int key)
     while (nextPagePtr != NULL_DATA)
     {
         currentPagePtr = nextPagePtr;
-        int status = indexFile->readPageAt(currentPagePtr, currentPage);
-        if (status == BLOCK_OPERATION_FAILED)
-        {
-            throw std::runtime_error("Error: Could not read page at offset " + std::to_string(rootPagePtr));
-        }
+        readPage(currentPagePtr, currentPage);
 
         std::pair<int, bool> bisectionResult;
         bisectionResult = currentPage.bisectionSearchForKey(key);
@@ -62,7 +58,7 @@ void BtreeHandler::insertRecord(const Record &record)
                                     {BtreeNode(NULL_DATA, NULL_DATA, NULL_DATA),
                                      BtreeNode(NULL_DATA, record.key, dataLastRecordOffset)});
         dataLastRecordOffset++;
-        indexFile->writePageAt(indexLastPageOffset, rootPageStructure);
+        writePage(indexLastPageOffset, rootPageStructure);
         indexLastPageOffset++;
         rootPagePtr = 0;
         return;
@@ -81,21 +77,26 @@ void BtreeHandler::insertRecord(const Record &record)
 
     currentNode = BtreeNode(NULL_DATA, record.key, dataLastRecordOffset - 1);
 
+    insertNode(currentNode);
+}
+
+void BtreeHandler::insertNode(BtreeNode node)
+{
     // if m < 2d
     if (currentPage.getRecordsOnPageCount() < 2 * BTREE_D_FACTOR)
     {
-        currentPage.insertNode(currentNode);
-        indexFile->writePageAt(currentPagePtr, currentPage);
+        currentPage.insertNode(node);
+        writePage(currentPagePtr, currentPage);
         return;
     }
 
     // overflow
-    if (compensation(currentPage, record))
-    {
-        return;
-    }
+    // if (compensation(currentPage, record))
+    // {
+    //     return;
+    // }
 
-    split(currentPage, currentNode);
+    split(currentPage, node);
 }
 
 bool BtreeHandler::compensation(BtreePage &page, Record record)
@@ -104,16 +105,16 @@ bool BtreeHandler::compensation(BtreePage &page, Record record)
         return false;
 
     BtreePage parent;
-    indexFile->readPageAt(page.getParentOffset(), parent);
+    readPage(page.getParentOffset(), parent);
 
     std::pair<int, bool> result = parent.bisectionSearchForKey(record.key);
     std::optional<BtreePage> leftSibling = std::nullopt;
     std::optional<BtreePage> rightSibling = std::nullopt;
 
     if (result.first != 0)
-        indexFile->readPageAt(parent.getPtr(result.first - 1), leftSibling.value());
+        readPage(parent.getPtr(result.first - 1), leftSibling.value());
     if (result.first != parent.getRecordsOnPageCount())
-        indexFile->readPageAt(parent.getPtr(result.first + 1), rightSibling.value());
+        readPage(parent.getPtr(result.first + 1), rightSibling.value());
 
     if (leftSibling != std::nullopt && leftSibling.value().getRecordsOnPageCount() < 2 * BTREE_D_FACTOR)
     {
@@ -154,9 +155,9 @@ bool BtreeHandler::compensation(BtreePage &page, Record record)
             page.insertNode(BtreeNode(NULL_DATA, keyOffsetPair[i].first, keyOffsetPair[i].second));
         }
 
-        indexFile->writePageAt(parent.getPtr(result.first + 1), rightSibling.value());
-        indexFile->writePageAt(parent.getPtr(result.first), page);
-        indexFile->writePageAt(page.getParentOffset(), parent);
+        writePage(parent.getPtr(result.first + 1), rightSibling.value());
+        writePage(parent.getPtr(result.first), page);
+        writePage(page.getParentOffset(), parent);
     }
     else if (rightSibling != std::nullopt && rightSibling.value().getRecordsOnPageCount() < 2 * BTREE_D_FACTOR)
     {
@@ -197,9 +198,9 @@ bool BtreeHandler::compensation(BtreePage &page, Record record)
             rightSibling.value().insertNode(BtreeNode(NULL_DATA, keyOffsetPair[i].first, keyOffsetPair[i].second));
         }
 
-        indexFile->writePageAt(parent.getPtr(result.first + 1), rightSibling.value());
-        indexFile->writePageAt(parent.getPtr(result.first), page);
-        indexFile->writePageAt(page.getParentOffset(), parent);
+        writePage(parent.getPtr(result.first + 1), rightSibling.value());
+        writePage(parent.getPtr(result.first), page);
+        writePage(page.getParentOffset(), parent);
     }
     else
     {
@@ -214,27 +215,27 @@ void BtreeHandler::split(BtreePage &page, BtreeNode node)
     bool isRoot = (page.getParentOffset() == NULL_DATA);
     int nodeIndex = page.bisectionSearchForKey(node.key).first;
 
+    std::vector<BtreeNode> sortedNodes;
+    for (int i = 0; i <= page.getRecordsOnPageCount(); i++)
+    {
+        sortedNodes.push_back(page.getNode(i));
+    }
+    sortedNodes.push_back(node);
+
+    std::sort(sortedNodes.begin(), sortedNodes.end(), [](BtreeNode a, BtreeNode b)
+              { return a.key < b.key; });
+
+    int mid = sortedNodes.size() / 2;
+
+    // fill old page
+    page.clearNodes();
+    for (int i = 0; i < mid; i++)
+    {
+        page.addNode(sortedNodes[i]);
+    }
+
     if (isRoot)
     {
-        std::vector<BtreeNode> sortedNodes;
-        for (int i = 0; i <= page.getRecordsOnPageCount(); i++)
-        {
-            sortedNodes.push_back(page.getNode(i));
-        }
-        sortedNodes.push_back(node);
-
-        std::sort(sortedNodes.begin(), sortedNodes.end(), [](BtreeNode a, BtreeNode b)
-                  { return a.key < b.key; });
-
-        int mid = sortedNodes.size() / 2;
-
-        // fill old page
-        page.clearNodes();
-        for (int i = 0; i < mid; i++)
-        {
-            page.addNode(sortedNodes[i]);
-        }
-
         // create new root
         // p0 points to the old page (old page is lower)
         // mid element is mid
@@ -262,15 +263,68 @@ void BtreeHandler::split(BtreePage &page, BtreeNode node)
 
         rootPagePtr = newRootPage.getThisPageOffset();
 
-        indexFile->writePageAt(page.getThisPageOffset(), page);
-        indexFile->writePageAt(newRootPage.getThisPageOffset(), newRootPage);
-        indexFile->writePageAt(newPage.getThisPageOffset(), newPage);
+        writePage(page.getThisPageOffset(), page);
+        writePage(newRootPage.getThisPageOffset(), newRootPage);
+        writePage(newPage.getThisPageOffset(), newPage);
+
+        BtreePage temp;
+        for (int i = 0; i <= newPage.getRecordsOnPageCount(); i++)
+        {
+            if (newPage.getNode(i).pagePtr == NULL_DATA)
+                continue;
+            readPage(newPage.getNode(i).pagePtr, temp);
+            temp.setParentOffset(newPage.getThisPageOffset());
+            writePage(newPage.getNode(i).pagePtr, temp);
+        }
     }
     else
     {
         // create new sibling page
+        BtreePage newPage(page.getParentOffset(),
+                          {BtreeNode(sortedNodes[mid].pagePtr, NULL_DATA, NULL_DATA)});
+        for (int i = mid + 1; i < sortedNodes.size(); i++)
+        {
+            newPage.addNode(sortedNodes[i]);
+        }
+        newPage.setThisPageOffset(indexLastPageOffset);
+        indexLastPageOffset++;
 
-        // distribute keys between old page, new page and parent
+        writePage(newPage.getThisPageOffset(), newPage);
+        writePage(page.getThisPageOffset(), page);
+
+        currentPagePtr = page.getParentOffset();
+        readPage(currentPagePtr, currentPage);
+
+        // update parent offset of children of new page
+        BtreePage temp;
+        for (int i = 0; i <= newPage.getRecordsOnPageCount(); i++)
+        {
+            if (newPage.getNode(i).pagePtr == NULL_DATA)
+                continue;
+            readPage(newPage.getNode(i).pagePtr, temp);
+            temp.setParentOffset(newPage.getThisPageOffset());
+            writePage(newPage.getNode(i).pagePtr, temp);
+        }
+
+        insertNode(BtreeNode(newPage.getThisPageOffset(), sortedNodes[mid].key, sortedNodes[mid].recordOffset));
+    }
+}
+
+void BtreeHandler::readPage(int offset, BtreePage &page)
+{
+    int status = indexFile->readPageAt(offset, page);
+    if (status == BLOCK_OPERATION_FAILED)
+    {
+        throw std::runtime_error("Error: Could not read page at offset " + std::to_string(rootPagePtr));
+    }
+}
+
+void BtreeHandler::writePage(int offset, BtreePage &page)
+{
+    int status = indexFile->writePageAt(offset, page);
+    if (status == BLOCK_OPERATION_FAILED)
+    {
+        throw std::runtime_error("Error: Could not write page at offset " + std::to_string(rootPagePtr));
     }
 }
 

@@ -23,6 +23,10 @@ int IndexBlockIO::readPageAt(int offset, BtreePage &page)
 
     if (newBlockIndex != currentBlockIndex)
     {
+        if (modifiedBlock)
+        {
+            writeBlock();
+        }
         currentBlockIndex = newBlockIndex;
         readBlockAt(currentBlockIndex);
         readBlock();

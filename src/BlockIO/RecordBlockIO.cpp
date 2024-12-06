@@ -23,6 +23,10 @@ int RecordBlockIO::readRecordAt(int offset, Record &record)
 
     if (newBlockIndex != currentBlockIndex)
     {
+        if (modifiedBlock)
+        {
+            writeBlock();
+        }
         currentBlockIndex = newBlockIndex;
         readBlockAt(currentBlockIndex);
         readBlock();
@@ -30,6 +34,8 @@ int RecordBlockIO::readRecordAt(int offset, Record &record)
 
     if (filledBlockIndex <= blockIndex)
     {
+        throw std::runtime_error("Error: Could not read record at offset " + std::to_string(offset));
+
         return BLOCK_OPERATION_FAILED;
     }
 

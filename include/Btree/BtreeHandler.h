@@ -23,6 +23,10 @@ class BtreeHandler
     bool compensation(BtreePage &page, Record record);
     void split(BtreePage &page, BtreeNode node);
 
+    void readPage(int offset, BtreePage &page);
+    void writePage(int offset, BtreePage &page);
+    void insertNode(BtreeNode node);
+
 public:
     int getRootPageOffset();
 

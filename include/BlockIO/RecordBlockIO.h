@@ -31,6 +31,12 @@ public:
         return allRecordBlockReads;
     }
 
+    static void resetAllBlockStats()
+    {
+        allRecordBlockWrites = 0;
+        allRecordBlockReads = 0;
+    }
+
     RecordBlockIO(std::string filename);
     ~RecordBlockIO();
 };

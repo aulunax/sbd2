@@ -27,6 +27,12 @@ public:
         return allIndexBlockReads;
     }
 
+    static void resetAllBlockStats()
+    {
+        allIndexBlockWrites = 0;
+        allIndexBlockReads = 0;
+    }
+
     IndexBlockIO(std::string filename);
     ~IndexBlockIO();
 };

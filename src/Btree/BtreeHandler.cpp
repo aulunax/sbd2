@@ -3,6 +3,9 @@
 
 BtreeHandler::BtreeHandler(std::string indexFilename, std::string dataFilename)
 {
+    BlockInputOutput::resetAllBlockStats();
+    RecordBlockIO::resetAllBlockStats();
+    IndexBlockIO::resetAllBlockStats();
     dataFile = std::make_unique<RecordBlockIO>(dataFilename);
     indexFile = std::make_unique<IndexBlockIO>(indexFilename);
 }

@@ -80,6 +80,70 @@ void BtreeHandler::insertRecord(const Record &record)
     insertNode(currentNode);
 }
 
+void BtreeHandler::printAllRecords(bool moreInfo, bool groupPages)
+{
+    if (rootPagePtr == NULL_DATA)
+    {
+        std::cout << "No records in database\n";
+        return;
+    }
+
+    readPage(rootPagePtr, currentPage);
+    printPage(currentPage, moreInfo, groupPages);
+}
+
+void BtreeHandler::printPage(BtreePage page, bool moreInfo, bool groupPages)
+{
+    std::vector<BtreeNode> nodes = page.getNodes();
+
+    if (nodes[0].pagePtr != NULL_DATA)
+    {
+        readPage(nodes[0].pagePtr, currentPage);
+        printPage(currentPage, moreInfo, groupPages);
+    }
+
+    if (groupPages)
+    {
+        std::cout << "-------- Page " << page.getThisPageOffset() << " ----------" << "\n";
+    }
+
+    for (int i = 1; i < nodes.size(); i++)
+    {
+        Record record = fetchRecord(nodes[i].recordOffset);
+        record.key = nodes[i].key;
+        if (!moreInfo)
+            std::cout << record.toString() << "\n";
+        else
+        {
+            std::cout << "RecordOffset: " << nodes[i].recordOffset
+                      << " | PageOffset: " << page.getThisPageOffset()
+                      << " | ParentPageOffset: " << page.getParentOffset()
+                      << " | RightPagePtr: " << nodes[i].pagePtr
+                      << " | LeftPagePtr: " << nodes[i - 1].pagePtr << "\n";
+            std::cout << record.toString() << "\n\n";
+        }
+
+        if (!groupPages && nodes[i].pagePtr != NULL_DATA)
+        {
+            readPage(nodes[i].pagePtr, currentPage);
+            printPage(currentPage, moreInfo, groupPages);
+        }
+    }
+
+    if (groupPages)
+    {
+        for (int i = 1; i < nodes.size(); i++)
+        {
+            if (nodes[i].pagePtr == NULL_DATA)
+            {
+                continue;
+            }
+            readPage(nodes[i].pagePtr, currentPage);
+            printPage(currentPage, moreInfo, groupPages);
+        }
+    }
+}
+
 void BtreeHandler::insertNode(BtreeNode node)
 {
     // if m < 2d
@@ -312,20 +376,39 @@ void BtreeHandler::split(BtreePage &page, BtreeNode node)
 
 void BtreeHandler::readPage(int offset, BtreePage &page)
 {
+    // try searching in buffer for the page
+    // std::optional<BtreePage *> result = pageBuffer.getPage(offset, indexFile.get());
+    // if (result != std::nullopt)
+    // {
+    //     page = *result.value();
+    //     return;
+    // }
+
     int status = indexFile->readPageAt(offset, page);
     if (status == BLOCK_OPERATION_FAILED)
     {
         throw std::runtime_error("Error: Could not read page at offset " + std::to_string(rootPagePtr));
     }
+
+    // pageBuffer.addPage(page, offset);
 }
 
 void BtreeHandler::writePage(int offset, BtreePage &page)
 {
+    // std::optional<BtreePage *> result = pageBuffer.getPage(offset, indexFile.get());
+    // if (result != std::nullopt)
+    // {
+    //     *result.value() = page;
+    //     return;
+    // }
+
     int status = indexFile->writePageAt(offset, page);
     if (status == BLOCK_OPERATION_FAILED)
     {
         throw std::runtime_error("Error: Could not write page at offset " + std::to_string(rootPagePtr));
     }
+
+    // pageBuffer.addPage(page, offset);
 }
 
 Record BtreeHandler::fetchRecord(int offset)

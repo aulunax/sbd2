@@ -20,6 +20,7 @@ const std::string HELP_MESSAGE =
     "  clear                                  Clear all the files\n"
     "  insert [key] [value]                   Insert record into the file\n"
     "  search [key]                           Search for record with given key\n"
+    "  print                                  Prints all records in db in order\n"
     "  loadtest [filename]                    Loads test commands from a file\n";
 
 const std::string DEBUG_HELP_MESSAGE =
@@ -47,7 +48,7 @@ class CommandLine
     void loadFile(const std::vector<std::string> &args);
     void saveFiles(const std::vector<std::string> &args);
     void clearFiles(const std::vector<std::string> &args);
-    void printFiles(const std::vector<std::string> &args);
+    void printBtree(const std::vector<std::string> &args);
     void insertRecord(const std::vector<std::string> &args);
     void insertRandomRecords(const std::vector<std::string> &args);
     void insertRecordsRange(const std::vector<std::string> &args);

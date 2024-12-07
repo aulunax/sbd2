@@ -1,6 +1,7 @@
 #include "Record.h"
 #include "RecordBlockIO.h"
 #include "IndexBlockIO.h"
+#include "BtreeBuffer.h"
 #include <memory>
 #include <optional>
 
@@ -10,6 +11,7 @@ class BtreeHandler
     std::unique_ptr<IndexBlockIO> indexFile;
 
     // important
+    BtreeBuffer pageBuffer;
     BtreeNode currentNode;
     int currentPagePtr;
     BtreePage currentPage;
@@ -27,6 +29,8 @@ class BtreeHandler
     void writePage(int offset, BtreePage &page);
     void insertNode(BtreeNode node);
 
+    void printPage(BtreePage page, bool moreInfo = false, bool groupPages = false);
+
 public:
     int getRootPageOffset();
 
@@ -35,4 +39,7 @@ public:
     void forceFlush();
     OptionalRecord searchRecord(int key);
     void insertRecord(const Record &record);
+
+    void printAllRecords(bool moreInfo = false, bool groupPages = false);
+    void printRecordsInPages(bool moreInfo = false);
 };

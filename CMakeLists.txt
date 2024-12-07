@@ -14,6 +14,7 @@ set(SOURCES
     ${PROJECT_SOURCE_DIR}/src/Btree/BtreeNode.cpp
     ${PROJECT_SOURCE_DIR}/src/Btree/BtreePage.cpp
     ${PROJECT_SOURCE_DIR}/src/Btree/BtreeHandler.cpp
+    ${PROJECT_SOURCE_DIR}/src/Btree/BtreeBuffer.cpp
     ${PROJECT_SOURCE_DIR}/src/Record.cpp
 )
 

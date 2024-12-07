@@ -34,6 +34,7 @@ int IndexBlockIO::readPageAt(int offset, BtreePage &page)
 
     if (filledBlockIndex <= blockIndex)
     {
+        throw std::runtime_error("Error: Could not read page at offset " + std::to_string(offset));
         return BLOCK_OPERATION_FAILED;
     }
 

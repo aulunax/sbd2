@@ -4,6 +4,9 @@
 #include <vector>
 #include <memory>
 
+#ifndef BTREEPAGE_H
+#define BTREEPAGE_H
+
 class BtreePage
 {
 public:
@@ -46,3 +49,5 @@ public:
 
     static BtreePage deserialize(const std::unique_ptr<char[]> &serializedPage);
 };
+
+#endif // BTREEPAGE_H

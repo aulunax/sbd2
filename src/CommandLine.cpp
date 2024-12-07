@@ -53,6 +53,10 @@ CommandLine::CommandLine()
     { clearFiles(args); };
     commandsMap["c"] = commandsMap["clear"];
 
+    commandsMap["print"] = [this](const std::vector<std::string> &args)
+    { printBtree(args); };
+    commandsMap["p"] = commandsMap["print"];
+
     // print help message when starting the CLI
     printHelp();
 }
@@ -292,6 +296,24 @@ void CommandLine::clearFiles(const std::vector<std::string> &args)
 {
     btreeHandler = std::make_unique<BtreeHandler>(INDEXFILE_FILENAME, DATAFILE_FILENAME);
     std::cout << "Files cleared successfully\n";
+}
+
+void CommandLine::printBtree(const std::vector<std::string> &args)
+{
+    if (args.size() > 3)
+    {
+        std::cout << "Argument error: Wrong amount of arguments, at most 2.\n";
+        return;
+    }
+
+    // flags moreInfo and groupPages based on args detection:
+    bool groupPages = false;
+    bool moreInfo = false;
+
+    std::find(args.begin(), args.end(), "group") != args.end() ? groupPages = true : groupPages = false;
+    std::find(args.begin(), args.end(), "all") != args.end() ? moreInfo = true : moreInfo = false;
+
+    btreeHandler->printAllRecords(moreInfo, groupPages);
 }
 
 void CommandLine::insertRecord(const std::vector<std::string> &args)

@@ -2,6 +2,9 @@
 #include "BlockInputOutput.h"
 #include "BtreePage.h"
 
+#ifndef INDEXBLOCKIO_H
+#define INDEXBLOCKIO_H
+
 class IndexBlockIO : public BlockInputOutput
 {
     static int allIndexBlockWrites;
@@ -27,3 +30,5 @@ public:
     IndexBlockIO(std::string filename);
     ~IndexBlockIO();
 };
+
+#endif // INDEXBLOCKIO_H

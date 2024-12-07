@@ -16,9 +16,13 @@ class BtreeHandler
     int currentPagePtr;
     BtreePage currentPage;
 
+    int lastKey = -1;
+
     int rootPagePtr = NULL_DATA;
     int indexLastPageOffset = 0;
     int dataLastRecordOffset = 0;
+
+    int height = 0;
 
     Record fetchRecord(int offset);
 
@@ -30,6 +34,7 @@ class BtreeHandler
     void insertNode(BtreeNode node);
 
     void printPage(BtreePage page, bool moreInfo = false, bool groupPages = false);
+    void setHeight(int height);
 
 public:
     int getRootPageOffset();

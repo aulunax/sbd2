@@ -57,6 +57,10 @@ CommandLine::CommandLine()
     { printBtree(args); };
     commandsMap["p"] = commandsMap["print"];
 
+    commandsMap["rand"] = [this](const std::vector<std::string> &args)
+    { insertRandomRecords(args); };
+    commandsMap["r"] = commandsMap["rand"];
+
     // print help message when starting the CLI
     printHelp();
 }
@@ -331,4 +335,24 @@ void CommandLine::insertRecord(const std::vector<std::string> &args)
     record.fill(value);
     record.key = key;
     btreeHandler->insertRecord(record);
+}
+
+void CommandLine::insertRandomRecords(const std::vector<std::string> &args)
+{
+    if (args.size() != 2)
+    {
+        std::cout << "Argument error: Wrong amount of arguments, needs 2.\n";
+        return;
+    }
+
+    int recordCount = std::stoi(args[1]);
+
+    for (int i = 0; i < recordCount; i++)
+    {
+        Record record;
+        record.Randomize();
+        btreeHandler->insertRecord(record);
+    }
+
+    std::cout << "Added " << recordCount << " records to the file\n";
 }

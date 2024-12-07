@@ -9,6 +9,7 @@ BtreeHandler::BtreeHandler(std::string indexFilename, std::string dataFilename)
 
 void BtreeHandler::forceFlush()
 {
+    pageBuffer.flush(indexFile.get());
     dataFile->flush();
     indexFile->flush();
 }
@@ -53,6 +54,7 @@ void BtreeHandler::insertRecord(const Record &record)
     // if first record
     if (rootPagePtr == NULL_DATA)
     {
+        setHeight(height + 1);
         dataFile->writeRecordAt(dataLastRecordOffset, record);
         BtreePage rootPageStructure(NULL_DATA,
                                     {BtreeNode(NULL_DATA, NULL_DATA, NULL_DATA),
@@ -80,6 +82,25 @@ void BtreeHandler::insertRecord(const Record &record)
     insertNode(currentNode);
 }
 
+void BtreeHandler::insertNode(BtreeNode node)
+{
+    // if m < 2d
+    if (currentPage.getRecordsOnPageCount() < 2 * BTREE_D_FACTOR)
+    {
+        currentPage.insertNode(node);
+        writePage(currentPagePtr, currentPage);
+        return;
+    }
+
+    // overflow
+    // if (compensation(currentPage, record))
+    // {
+    //     return;
+    // }
+
+    split(currentPage, node);
+}
+
 void BtreeHandler::printAllRecords(bool moreInfo, bool groupPages)
 {
     if (rootPagePtr == NULL_DATA)
@@ -87,6 +108,8 @@ void BtreeHandler::printAllRecords(bool moreInfo, bool groupPages)
         std::cout << "No records in database\n";
         return;
     }
+
+    lastKey = -1;
 
     readPage(rootPagePtr, currentPage);
     printPage(currentPage, moreInfo, groupPages);
@@ -111,6 +134,12 @@ void BtreeHandler::printPage(BtreePage page, bool moreInfo, bool groupPages)
     {
         Record record = fetchRecord(nodes[i].recordOffset);
         record.key = nodes[i].key;
+        if (!groupPages && record.key < lastKey)
+        {
+            std::cout << "Error: Keys are not sorted\n";
+            throw std::runtime_error("Keys are not sorted");
+        }
+        lastKey = record.key;
         if (!moreInfo)
             std::cout << record.toString() << "\n";
         else
@@ -144,23 +173,10 @@ void BtreeHandler::printPage(BtreePage page, bool moreInfo, bool groupPages)
     }
 }
 
-void BtreeHandler::insertNode(BtreeNode node)
+void BtreeHandler::setHeight(int height)
 {
-    // if m < 2d
-    if (currentPage.getRecordsOnPageCount() < 2 * BTREE_D_FACTOR)
-    {
-        currentPage.insertNode(node);
-        writePage(currentPagePtr, currentPage);
-        return;
-    }
-
-    // overflow
-    // if (compensation(currentPage, record))
-    // {
-    //     return;
-    // }
-
-    split(currentPage, node);
+    pageBuffer.setNewHeight(height);
+    this->height = height;
 }
 
 bool BtreeHandler::compensation(BtreePage &page, Record record)
@@ -300,6 +316,7 @@ void BtreeHandler::split(BtreePage &page, BtreeNode node)
 
     if (isRoot)
     {
+        setHeight(height + 1);
         // create new root
         // p0 points to the old page (old page is lower)
         // mid element is mid
@@ -376,13 +393,12 @@ void BtreeHandler::split(BtreePage &page, BtreeNode node)
 
 void BtreeHandler::readPage(int offset, BtreePage &page)
 {
-    // try searching in buffer for the page
-    // std::optional<BtreePage *> result = pageBuffer.getPage(offset, indexFile.get());
-    // if (result != std::nullopt)
-    // {
-    //     page = *result.value();
-    //     return;
-    // }
+    std::optional<BtreePage *> result = pageBuffer.getPage(offset);
+    if (result != std::nullopt)
+    {
+        page = *result.value();
+        return;
+    }
 
     int status = indexFile->readPageAt(offset, page);
     if (status == BLOCK_OPERATION_FAILED)
@@ -390,25 +406,25 @@ void BtreeHandler::readPage(int offset, BtreePage &page)
         throw std::runtime_error("Error: Could not read page at offset " + std::to_string(rootPagePtr));
     }
 
-    // pageBuffer.addPage(page, offset);
+    pageBuffer.pushPage(page, offset, indexFile.get(), false);
 }
 
 void BtreeHandler::writePage(int offset, BtreePage &page)
 {
-    // std::optional<BtreePage *> result = pageBuffer.getPage(offset, indexFile.get());
-    // if (result != std::nullopt)
-    // {
-    //     *result.value() = page;
-    //     return;
-    // }
-
-    int status = indexFile->writePageAt(offset, page);
-    if (status == BLOCK_OPERATION_FAILED)
+    std::optional<BtreePage *> result = pageBuffer.getPage(offset);
+    if (result != std::nullopt)
     {
-        throw std::runtime_error("Error: Could not write page at offset " + std::to_string(rootPagePtr));
+        pageBuffer.pushPage(page, offset, indexFile.get(), true);
+        return;
     }
 
-    // pageBuffer.addPage(page, offset);
+    // int status = indexFile->writePageAt(offset, page);
+    // if (status == BLOCK_OPERATION_FAILED)
+    // {
+    //     throw std::runtime_error("Error: Could not write page at offset " + std::to_string(rootPagePtr));
+    // }
+
+    pageBuffer.pushPage(page, offset, indexFile.get(), true);
 }
 
 Record BtreeHandler::fetchRecord(int offset)

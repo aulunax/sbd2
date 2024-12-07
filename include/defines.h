@@ -6,7 +6,7 @@
 
 // Record defines
 #define RECORD_INT_COUNT 10 // do not change
-#define MAX_KEY_VALUE 100000
+#define MAX_KEY_VALUE 1000
 #define RECORD_SIZE_IN_BYTES 40
 
 // B tree definies

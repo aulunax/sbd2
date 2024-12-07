@@ -57,8 +57,6 @@ int IndexBlockIO::writePageAt(int offset, const BtreePage &page)
             writeBlock();
         }
         currentBlockIndex = newBlockIndex;
-        readBlockAt(currentBlockIndex);
-        readBlock();
     }
 
     writeBlockAt(currentBlockIndex);

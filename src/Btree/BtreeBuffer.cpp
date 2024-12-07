@@ -1,52 +1,68 @@
 #include "BtreeBuffer.h"
-void BtreeBuffer::setCurrentDepthTo(int depth, IndexBlockIO *indexFile)
+#include <algorithm>
+
+void BtreeBuffer::pushPage(BtreePage &page, int pageOffset, IndexBlockIO *indexFile, bool writing)
 {
-    if (depth < pageBuffer.size())
+    auto it = std::find_if(pageBuffer.begin(), pageBuffer.end(),
+                           [pageOffset](const BufferPage &bufferPage)
+                           {
+                               return bufferPage.pageOffset == pageOffset;
+                           });
+
+    if (it != pageBuffer.end())
     {
-        for (int i = pageBuffer.size() - 1; i >= depth; i--)
+        // If the page exists, move it to the front (most recent)
+        BufferPage existingPage = *it;
+        pageBuffer.erase(it);
+        existingPage.page = page;
+        if (writing)
         {
-            indexFile->writePageAt(pageBuffer[i].pageOffset, pageBuffer[i].page);
+            existingPage.modified = true;
         }
-        pageBuffer.resize(depth);
+        pageBuffer.insert(pageBuffer.begin(), existingPage);
     }
     else
     {
-        throw std::runtime_error("Error: Could not set buffer depth to " + std::to_string(depth));
-    }
-}
-
-void BtreeBuffer::addPage(BtreePage &page, int pageOffset)
-{
-    if (pageBuffer.size() > 6)
-    {
-        throw std::runtime_error("Error: Thats a large buffer");
-    }
-    pageBuffer.push_back({page, pageOffset});
-}
-
-std::optional<BtreePage *> BtreeBuffer::getPage(int pageOffset, IndexBlockIO *indexFile)
-{
-    int curDepth = 0;
-    BufferPage &bufferPage = pageBuffer[0];
-    for (int i = 0; i < pageBuffer.size(); i++)
-    {
-        curDepth++;
-        bufferPage = pageBuffer[i];
-        if (bufferPage.pageOffset == pageOffset)
+        // If the page does not exist, create a new BufferPage
+        BufferPage newBufferPage;
+        newBufferPage.page = page;
+        newBufferPage.pageOffset = pageOffset;
+        if (writing)
         {
-            if (realDepth > curDepth)
+            newBufferPage.modified = true;
+        }
+
+        // Add the new page to the front
+        pageBuffer.insert(pageBuffer.begin(), newBufferPage);
+
+        // If the buffer exceeds the maximum size, remove the least recent page
+        if (pageBuffer.size() > height + 1)
+        {
+            if (pageBuffer.back().modified)
             {
-                setCurrentDepthTo(curDepth, indexFile);
+                indexFile->writePageAt(pageBuffer.back().pageOffset, pageBuffer.back().page);
             }
-            realDepth = curDepth;
-            bufferPage.page.setThisPageOffset(bufferPage.pageOffset);
-            return &bufferPage.page;
+            pageBuffer.pop_back();
         }
     }
-    if (realDepth != 0)
+}
+
+std::optional<BtreePage *> BtreeBuffer::getPage(int pageOffset)
+{
+    // Search for the page in the buffer
+    auto it = std::find_if(pageBuffer.begin(), pageBuffer.end(),
+                           [pageOffset](const BufferPage &bufferPage)
+                           {
+                               return bufferPage.pageOffset == pageOffset;
+                           });
+
+    // If the page is found
+    if (it != pageBuffer.end())
     {
-        realDepth = 0;
-        setCurrentDepthTo(0, indexFile);
+        it->page.setThisPageOffset(it->pageOffset);
+        return &(it->page);
     }
+
+    // If not found, return std::nullopt
     return std::nullopt;
 }

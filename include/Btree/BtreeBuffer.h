@@ -12,20 +12,29 @@ class BufferPage
 public:
     BtreePage page;
     int pageOffset;
+    bool modified = false;
 };
 
 class BtreeBuffer
 {
     std::vector<BufferPage> pageBuffer;
 
-    int realDepth = 0;
+    int height = 0;
 
 public:
-    void setCurrentDepthTo(int depth, IndexBlockIO *indexFile);
-    int getCurrentBufferDepth() { return pageBuffer.size(); }
+    void setNewHeight(int height) { this->height = height; }
 
-    void addPage(BtreePage &page, int pageOffset);
-    std::optional<BtreePage *> getPage(int pageOffset, IndexBlockIO *indexFile);
+    void flush(IndexBlockIO *indexFile)
+    {
+        for (BufferPage &bufferPage : pageBuffer)
+        {
+            indexFile->writePageAt(bufferPage.pageOffset, bufferPage.page);
+        }
+        pageBuffer.clear();
+    }
+
+    void pushPage(BtreePage &page, int pageOffset, IndexBlockIO *indexFile, bool writing);
+    std::optional<BtreePage *> getPage(int pageOffset);
 };
 
 #endif // BTREEBUFFER_H

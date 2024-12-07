@@ -16,6 +16,8 @@ class BtreeHandler
     int currentPagePtr;
     BtreePage currentPage;
 
+    int printRecordCount = 0;
+    int printPagesCount = 0;
     int lastKey = -1;
 
     int rootPagePtr = NULL_DATA;

@@ -2,11 +2,11 @@
 
 void Record::Randomize()
 {
+    key = rand() % MAX_KEY_VALUE;
     for (int i = 0; i < RECORD_INT_COUNT; i++)
     {
         arr[i] = rand() % 1000;
     }
-    key = rand() % MAX_KEY_VALUE;
 }
 
 int Record::sum()

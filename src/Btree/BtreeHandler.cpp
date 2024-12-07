@@ -113,14 +113,22 @@ void BtreeHandler::printAllRecords(bool moreInfo, bool groupPages)
     }
 
     lastKey = -1;
-
+    printRecordCount = 0;
+    printPagesCount = 0;
     readPage(rootPagePtr, currentPage);
     printPage(currentPage, moreInfo, groupPages);
+
+    std::cout << "-----------------------------------\n";
+    std::cout << "Total records: " << printRecordCount << "\n";
+    std::cout << "Total pages count: " << printPagesCount << "\n";
+    std::cout << "-----------------------------------\n";
 }
 
 void BtreeHandler::printPage(BtreePage page, bool moreInfo, bool groupPages)
 {
     std::vector<BtreeNode> nodes = page.getNodes();
+
+    printPagesCount++;
 
     if (nodes[0].pagePtr != NULL_DATA)
     {
@@ -136,6 +144,7 @@ void BtreeHandler::printPage(BtreePage page, bool moreInfo, bool groupPages)
     for (int i = 1; i < nodes.size(); i++)
     {
         Record record = fetchRecord(nodes[i].recordOffset);
+        printRecordCount++;
         record.key = nodes[i].key;
         if (!groupPages && record.key < lastKey)
         {

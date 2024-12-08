@@ -61,6 +61,10 @@ CommandLine::CommandLine()
     { insertRandomRecords(args); };
     commandsMap["r"] = commandsMap["rand"];
 
+    commandsMap["setcompensation"] = [this](const std::vector<std::string> &args)
+    { toggleCompensation(args); };
+    commandsMap["sc"] = commandsMap["setcompensation"];
+
     // print help message when starting the CLI
     printHelp();
 }
@@ -204,6 +208,30 @@ void CommandLine::searchRecord(const std::vector<std::string> &args)
     }
 }
 
+void CommandLine::toggleCompensation(const std::vector<std::string> &args)
+{
+    if (args.size() != 2)
+    {
+        std::cout << "Argument error: Wrong amount of arguments, needs 2.\n";
+        return;
+    }
+
+    if (args[1] == "true" || args[1] == "t" || args[1] == "1")
+    {
+        btreeHandler->setDoCompensation(true);
+        std::cout << "Compensation is now enabled\n";
+    }
+    else if (args[1] == "false" || args[1] == "f" || args[1] == "0")
+    {
+        btreeHandler->setDoCompensation(false);
+        std::cout << "Compensation is now disabled\n";
+    }
+    else
+    {
+        std::cout << "Argument error: Wrong argument, needs 'true' or 'false'.\n";
+    }
+}
+
 void CommandLine::addRawRecordToFile(const std::vector<std::string> &args)
 {
     if (args.size() != 2)
@@ -272,6 +300,7 @@ void CommandLine::printBlockStatistics(const std::vector<std::string> &args)
     std::cout << "Record block writes: " << RecordBlockIO::getAllRecordBlockWrites() << "\n";
     std::cout << "Index block reads: " << IndexBlockIO::getAllIndexBlockReads() << "\n";
     std::cout << "Index block writes: " << IndexBlockIO::getAllIndexBlockWrites() << "\n";
+    btreeHandler->printCacheStats();
 }
 
 void CommandLine::forceFlush(const std::vector<std::string> &args)
@@ -298,6 +327,7 @@ bool CommandLine::isFileOpenedCorrectly(std::fstream &file)
 
 void CommandLine::clearFiles(const std::vector<std::string> &args)
 {
+    btreeHandler->forceFlush();
     btreeHandler = std::make_unique<BtreeHandler>(INDEXFILE_FILENAME, DATAFILE_FILENAME);
     std::cout << "Files cleared successfully\n";
 }
@@ -322,14 +352,24 @@ void CommandLine::printBtree(const std::vector<std::string> &args)
 
 void CommandLine::insertRecord(const std::vector<std::string> &args)
 {
-    if (args.size() != 3)
+    if (args.size() > 3)
     {
-        std::cout << "Argument error: Wrong amount of arguments, needs 3.\n";
+        std::cout << "Argument error: Wrong amount of arguments, needs at most 3.\n";
+        return;
+    }
+
+    if (args.size() <= 1)
+    {
+        std::cout << "Argument error: Wrong amount of arguments, needs at least 2.\n";
         return;
     }
 
     int key = std::stoi(args[1]);
-    int value = std::stoi(args[2]);
+    int value = key;
+    if (args.size() == 3)
+    {
+        value = std::stoi(args[2]);
+    }
 
     Record record;
     record.fill(value);

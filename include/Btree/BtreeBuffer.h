@@ -33,8 +33,8 @@ public:
         pageBuffer.clear();
     }
 
-    void pushPage(BtreePage &page, int pageOffset, IndexBlockIO *indexFile, bool writing);
-    std::optional<BtreePage *> getPage(int pageOffset);
+    void pushPage(BtreePage &page, int pageOffset, IndexBlockIO *indexFile, bool writing, bool lowPriority = false);
+    std::optional<BtreePage *> getPage(int pageOffset, bool lowPriority = false);
 };
 
 #endif // BTREEBUFFER_H

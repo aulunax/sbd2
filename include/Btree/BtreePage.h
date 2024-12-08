@@ -35,11 +35,13 @@ public:
     bool isRoot();
 
     BtreeNode getNode(int index) const;
+    void setNode(int index, BtreeNode &node);
     int getKey(int index) const;
     int getPtr(int index) const;
     int getRecordOffset(int index) const;
 
     void setKey(int index, int value);
+    void setPtr(int index, int value);
     void setRecordOffset(int index, int value);
 
     int serialize(std::unique_ptr<char[]> &serializedPage) const;

@@ -17,10 +17,12 @@ const std::string HELP_MESSAGE =
     "-------------------------------------------------------------------- \n"
     "  help                                   Show this help message\n"
     "  help debug                             Show help relating to debug stuff (only for debugging)\n"
+    "  setcompensation [true/false]           Toggle compensation on insert\n"
     "  clear                                  Clear all the files\n"
+    "  rand [n]                               Insert n random records to db\n"
     "  insert [key] [value]                   Insert record into the file\n"
     "  search [key]                           Search for record with given key\n"
-    "  print                                  Prints all records in db in order\n"
+    "  print [group] [all]                    Prints all records in db in order (or grouped by page)\n"
     "  loadtest [filename]                    Loads test commands from a file\n";
 
 const std::string DEBUG_HELP_MESSAGE =
@@ -52,8 +54,8 @@ class CommandLine
     void insertRecord(const std::vector<std::string> &args);
     void insertRandomRecords(const std::vector<std::string> &args);
     void insertRecordsRange(const std::vector<std::string> &args);
-    void readRecord(const std::vector<std::string> &args);
     void searchRecord(const std::vector<std::string> &args);
+    void toggleCompensation(const std::vector<std::string> &args);
 
     // debug commands
     void addRawRecordToFile(const std::vector<std::string> &args);

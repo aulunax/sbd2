@@ -29,11 +29,9 @@ const std::string HELP_MESSAGE =
 const std::string DEBUG_HELP_MESSAGE =
     "\n  List of available debug commands\n"
     "-------------------------------------------------------------------- \n"
-    "  dcleartest                                Clears the test file\n"
     "  dblockstats                               Prints block stats\n"
-    "  drandrecord [n]                           Add n random records to a file\n"
     "  dforceflush                               Forces a flush of the files\n"
-    "  dgetrecord [n]                            Gets a record at offset n\n";
+    "  dgetrecord [n]                            Gets a record at offset (data file)n\n";
 
 class CommandLine
 {
@@ -48,22 +46,17 @@ class CommandLine
     // main commands
     void handleHelp(const std::vector<std::string> &args);
     void loadTestFile(const std::vector<std::string> &args);
-    void loadFile(const std::vector<std::string> &args);
-    void saveFiles(const std::vector<std::string> &args);
     void clearFiles(const std::vector<std::string> &args);
     void printBtree(const std::vector<std::string> &args);
     void insertRecord(const std::vector<std::string> &args);
     void insertRandomRecords(const std::vector<std::string> &args);
-    void insertRecordsRange(const std::vector<std::string> &args);
     void searchRecord(const std::vector<std::string> &args);
     void toggleCompensation(const std::vector<std::string> &args);
     void updateRecord(const std::vector<std::string> &args);
     void removeRecord(const std::vector<std::string> &args);
 
     // debug commands
-    void addRawRecordToFile(const std::vector<std::string> &args);
     void readRawRecordToFile(const std::vector<std::string> &args);
-    void clearTestFile(const std::vector<std::string> &args);
     void printBlockStatistics(const std::vector<std::string> &args);
     void forceFlush(const std::vector<std::string> &args);
 

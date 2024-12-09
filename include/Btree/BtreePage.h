@@ -32,6 +32,7 @@ public:
     void setThisPageOffset(int thisPageOffset) { this->thisPageOffset = thisPageOffset; }
 
     std::pair<int, bool> bisectionSearchForKey(int key);
+    std::pair<int, bool> bisectionSearchForPtr(int ptr);
 
     bool isRoot();
 

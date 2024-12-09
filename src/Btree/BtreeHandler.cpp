@@ -60,6 +60,8 @@ void BtreeHandler::insertRecord(const Record &record)
     // if first record
     if (rootPagePtr == NULL_DATA)
     {
+        indexLastPageOffset = 0;
+        dataLastRecordOffset = 0;
         setHeight(height + 1);
         dataFile->writeRecordAt(dataLastRecordOffset, record);
         BtreePage rootPageStructure(NULL_DATA,
@@ -67,8 +69,8 @@ void BtreeHandler::insertRecord(const Record &record)
                                      BtreeNode(NULL_DATA, record.key, dataLastRecordOffset)});
         dataLastRecordOffset++;
         writePage(indexLastPageOffset, rootPageStructure);
+        rootPagePtr = indexLastPageOffset;
         indexLastPageOffset++;
-        rootPagePtr = 0;
         return;
     }
 
@@ -128,18 +130,28 @@ void BtreeHandler::deleteRecord(int key)
     // currentPage contains the page the node was deleted from
     replaceKeyWithLeaf(currentPage, key);
 
+    if (currentPage.getThisPageOffset() == rootPagePtr && currentPage.getRecordsOnPageCount() == 0)
+    {
+        setHeight(height - 1);
+        rootPagePtr = NULL_DATA;
+        return;
+    }
+
     deleteNode(currentNode);
 }
 
 void BtreeHandler::deleteNode(BtreeNode node)
 {
-    if (currentPage.getRecordsOnPageCount() >= BTREE_D_FACTOR)
+    if (currentPage.getRecordsOnPageCount() >= BTREE_D_FACTOR ||
+        (currentPage.getThisPageOffset() == rootPagePtr && currentPage.getRecordsOnPageCount() >= 1))
         return;
 
     if (doCompensation && compensation(currentPage, node, UNDERFLOW))
     {
         return;
     }
+
+    merge(currentPage, node);
 }
 
 void BtreeHandler::replaceKeyWithLeaf(BtreePage page, int key)
@@ -180,6 +192,96 @@ void BtreeHandler::replaceKeyWithLeaf(BtreePage page, int key)
 
 void BtreeHandler::merge(BtreePage page, BtreeNode node)
 {
+    bool isRoot = (page.getParentOffset() == NULL_DATA);
+
+    if (isRoot && page.getRecordsOnPageCount() == 0)
+    {
+        page.setParentOffset(NULL_DATA);
+        rootPagePtr = page.getNode(0).pagePtr;
+        setHeight(height - 1);
+        return;
+    }
+
+    BtreePage parent;
+    readPage(page.getParentOffset(), parent);
+
+    std::pair<int, bool> result = parent.bisectionSearchForPtr(page.getThisPageOffset());
+
+    BtreePage sibling;
+    BtreePage *lowerPage = &sibling;
+    BtreePage *higherPage = &page;
+    int side = LEFT_SIBLING;
+    int parentMidNode = -1;
+    if (result.first != 0)
+    {
+        readPage(parent.getPtr(result.first - 1), sibling, true);
+        parentMidNode = result.first;
+    }
+    if (parentMidNode == -1 &&
+        result.first != parent.getRecordsOnPageCount())
+    {
+        readPage(parent.getPtr(result.first + 1), sibling, true);
+        parentMidNode = result.first + 1;
+        side = RIGHT_SIBLING;
+        lowerPage = &page;
+        higherPage = &sibling;
+    }
+
+    std::vector<BtreeNode> sortedNodes;
+    for (int i = 1; i <= lowerPage->getRecordsOnPageCount(); i++)
+    {
+        sortedNodes.push_back(lowerPage->getNode(i));
+    }
+
+    for (int i = 1; i <= higherPage->getRecordsOnPageCount(); i++)
+    {
+        sortedNodes.push_back(higherPage->getNode(i));
+    }
+
+    if (side == LEFT_SIBLING)
+    {
+        sortedNodes.push_back(parent.getNode(result.first));
+        parent.removeNode(result.first);
+    }
+    else if (side == RIGHT_SIBLING)
+    {
+        sortedNodes.push_back(parent.getNode(result.first + 1));
+        parent.removeNode(result.first + 1);
+    }
+
+    // set ptr of node taken from parent to the leftmost ptr of the right page
+    sortedNodes.back().pagePtr = higherPage->getNode(0).pagePtr;
+
+    std::sort(sortedNodes.begin(), sortedNodes.end(), [](BtreeNode a, BtreeNode b)
+              { return a.key < b.key; });
+
+    BtreeNode firstNode;
+    firstNode = lowerPage->getNode(0);
+    lowerPage->clearNodes();
+    lowerPage->addNode(firstNode);
+    for (int i = 0; i < sortedNodes.size(); i++)
+    {
+        lowerPage->addNode(sortedNodes[i]);
+    }
+
+    writePage(higherPage->getThisPageOffset(), *higherPage, true);
+    writePage(lowerPage->getThisPageOffset(), *lowerPage);
+    writePage(parent.getThisPageOffset(), parent);
+
+    BtreePage temp;
+    for (int i = 0; i <= lowerPage->getRecordsOnPageCount(); i++)
+    {
+        if (lowerPage->getNode(i).pagePtr == NULL_DATA)
+            continue;
+        readPage(lowerPage->getNode(i).pagePtr, temp, true);
+        if (temp.getParentOffset() == lowerPage->getThisPageOffset())
+            continue;
+        temp.setParentOffset(lowerPage->getThisPageOffset());
+        writePage(lowerPage->getNode(i).pagePtr, temp, true);
+    }
+
+    currentPage = parent;
+    deleteNode(node);
 }
 
 void BtreeHandler::insertNode(BtreeNode node)
@@ -490,6 +592,7 @@ void BtreeHandler::printAllRecords(bool moreInfo, bool groupPages)
     std::cout << "-----------------------------------\n";
     std::cout << "Total records: " << printRecordCount << "\n";
     std::cout << "Total pages count: " << printPagesCount << "\n";
+    std::cout << "Height: " << height << "\n";
     std::cout << "-----------------------------------\n";
 }
 

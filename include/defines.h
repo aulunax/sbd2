@@ -29,6 +29,9 @@
 #define OVERFLOW 1
 #define UNDERFLOW 0
 
+#define LEFT_SIBLING -1
+#define RIGHT_SIBLING 1
+
 // Main program file names
 #define DATAFILE_FILENAME "data.bin"
 #define DATAFILE_PLAINTEXT_FILENAME "data.txt"

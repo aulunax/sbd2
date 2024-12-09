@@ -21,17 +21,9 @@ CommandLine::CommandLine()
     { loadTestFile(args); };
     commandsMap["lt"] = commandsMap["loadtest"];
 
-    commandsMap["drandrecord"] = [this](const std::vector<std::string> &args)
-    { addRawRecordToFile(args); };
-    commandsMap["drr"] = commandsMap["drandrecord"];
-
     commandsMap["dgetrecord"] = [this](const std::vector<std::string> &args)
     { readRawRecordToFile(args); };
     commandsMap["dgr"] = commandsMap["dgetrecord"];
-
-    commandsMap["dcleartest"] = [this](const std::vector<std::string> &args)
-    { clearTestFile(args); };
-    commandsMap["dct"] = commandsMap["dcleartest"];
 
     commandsMap["dblockstats"] = [this](const std::vector<std::string> &args)
     { printBlockStatistics(args); };
@@ -56,6 +48,8 @@ CommandLine::CommandLine()
     commandsMap["print"] = [this](const std::vector<std::string> &args)
     { printBtree(args); };
     commandsMap["p"] = commandsMap["print"];
+    commandsMap["pag"] = [this](const std::vector<std::string> &args)
+    { printBtree({"print", "all", "group"}); };
 
     commandsMap["rand"] = [this](const std::vector<std::string> &args)
     { insertRandomRecords(args); };
@@ -269,33 +263,6 @@ void CommandLine::removeRecord(const std::vector<std::string> &args)
     int key = std::stoi(args[1]);
 
     btreeHandler->deleteRecord(key);
-
-    std::cout << "Record with key " << key << " removed successfully\n";
-}
-
-void CommandLine::addRawRecordToFile(const std::vector<std::string> &args)
-{
-    if (args.size() != 2)
-    {
-        std::cout << "Argument error: Wrong amount of arguments, needs 1.\n";
-        return;
-    }
-
-    int recordCount = std::stoi(args[1]);
-
-    RecordBlockIO file(TEST_FILENAME);
-
-    for (int i = 0; i < recordCount; i++)
-    {
-        Record record;
-        record.Randomize();
-        if (!file.writeRecordAt(i, record))
-        {
-            std::cout << "Error: Could not write record at offset " << i << "\n";
-        }
-    }
-
-    std::cout << "Added " << recordCount << " records to the file\n";
 }
 
 void CommandLine::readRawRecordToFile(const std::vector<std::string> &args)
@@ -318,19 +285,6 @@ void CommandLine::readRawRecordToFile(const std::vector<std::string> &args)
     }
 
     std::cout << record.toString() << std::endl;
-}
-
-void CommandLine::clearTestFile(const std::vector<std::string> &args)
-{
-    std::fstream file(TEST_FILENAME, std::ios::out | std::ios::trunc);
-    if (!isFileOpenedCorrectly(file))
-    {
-        std::cout << "Error: Could not clear test file\n";
-        return;
-    }
-    file.close();
-
-    std::cout << "Test file cleared\n";
 }
 
 void CommandLine::printBlockStatistics(const std::vector<std::string> &args)

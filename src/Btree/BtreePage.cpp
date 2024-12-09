@@ -238,6 +238,30 @@ std::pair<int, bool> BtreePage::bisectionSearchForKey(int key)
     return {left, false};
 }
 
+std::pair<int, bool> BtreePage::bisectionSearchForPtr(int ptr)
+{
+    int left = 0, right = getRecordsOnPageCount() - 1, mid;
+
+    while (left <= right)
+    {
+        mid = left + (right - left) / 2;
+        if (getPtr(mid) == ptr)
+        {
+            return {mid, true};
+        }
+        else if (getPtr(mid) < ptr)
+        {
+            left = mid + 1;
+        }
+        else
+        {
+            right = mid - 1;
+        }
+    }
+
+    return {left, false};
+}
+
 std::vector<BtreeNode> &BtreePage::getNodes()
 {
     return nodes;

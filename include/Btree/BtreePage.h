@@ -20,6 +20,7 @@ public:
 
     void addNode(BtreeNode node);
     void insertNode(BtreeNode node);
+    void removeNode(int index);
     void clearNodes();
 
     int getRecordsOnPageCount() const;

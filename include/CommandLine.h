@@ -20,6 +20,7 @@ const std::string HELP_MESSAGE =
     "  setcompensation [true/false]           Toggle compensation on insert\n"
     "  clear                                  Clear all the files\n"
     "  rand [n]                               Insert n random records to db\n"
+    "  update [key] [value]                   Update record with given key\n"
     "  insert [key] [value]                   Insert record into the file\n"
     "  search [key]                           Search for record with given key\n"
     "  print [group] [all]                    Prints all records in db in order (or grouped by page)\n"
@@ -56,6 +57,8 @@ class CommandLine
     void insertRecordsRange(const std::vector<std::string> &args);
     void searchRecord(const std::vector<std::string> &args);
     void toggleCompensation(const std::vector<std::string> &args);
+    void updateRecord(const std::vector<std::string> &args);
+    void removeRecord(const std::vector<std::string> &args);
 
     // debug commands
     void addRawRecordToFile(const std::vector<std::string> &args);

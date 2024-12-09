@@ -6,7 +6,7 @@
 
 // Record defines
 #define RECORD_INT_COUNT 10 // do not change
-#define MAX_KEY_VALUE 10000
+#define MAX_KEY_VALUE 100000
 #define RECORD_SIZE_IN_BYTES 40
 
 // B tree definies
@@ -25,6 +25,9 @@
 
 #define BLOCK_OPERATION_SUCCESSFUL 1
 #define BLOCK_OPERATION_FAILED 0
+
+#define OVERFLOW 1
+#define UNDERFLOW 0
 
 // Main program file names
 #define DATAFILE_FILENAME "data.bin"

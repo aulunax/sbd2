@@ -65,6 +65,14 @@ CommandLine::CommandLine()
     { toggleCompensation(args); };
     commandsMap["sc"] = commandsMap["setcompensation"];
 
+    commandsMap["update"] = [this](const std::vector<std::string> &args)
+    { updateRecord(args); };
+    commandsMap["u"] = commandsMap["update"];
+
+    commandsMap["delete"] = [this](const std::vector<std::string> &args)
+    { removeRecord(args); };
+    commandsMap["d"] = commandsMap["delete"];
+
     // print help message when starting the CLI
     printHelp();
 }
@@ -232,11 +240,44 @@ void CommandLine::toggleCompensation(const std::vector<std::string> &args)
     }
 }
 
-void CommandLine::addRawRecordToFile(const std::vector<std::string> &args)
+void CommandLine::updateRecord(const std::vector<std::string> &args)
+{
+    if (args.size() < 3)
+    {
+        std::cout << "Argument error: Wrong amount of arguments, needs at least 2.\n";
+        return;
+    }
+
+    int key = std::stoi(args[1]);
+    int value = std::stoi(args[2]);
+
+    Record record;
+    record.fill(value);
+    record.key = key;
+
+    btreeHandler->updateRecord(key, record);
+}
+
+void CommandLine::removeRecord(const std::vector<std::string> &args)
 {
     if (args.size() != 2)
     {
         std::cout << "Argument error: Wrong amount of arguments, needs 2.\n";
+        return;
+    }
+
+    int key = std::stoi(args[1]);
+
+    btreeHandler->deleteRecord(key);
+
+    std::cout << "Record with key " << key << " removed successfully\n";
+}
+
+void CommandLine::addRawRecordToFile(const std::vector<std::string> &args)
+{
+    if (args.size() != 2)
+    {
+        std::cout << "Argument error: Wrong amount of arguments, needs 1.\n";
         return;
     }
 
@@ -344,8 +385,11 @@ void CommandLine::printBtree(const std::vector<std::string> &args)
     bool groupPages = false;
     bool moreInfo = false;
 
-    std::find(args.begin(), args.end(), "group") != args.end() ? groupPages = true : groupPages = false;
-    std::find(args.begin(), args.end(), "all") != args.end() ? moreInfo = true : moreInfo = false;
+    groupPages = std::any_of(args.begin(), args.end(), [](const std::string &arg)
+                             { return arg == "group" || arg == "g"; });
+
+    moreInfo = std::any_of(args.begin(), args.end(), [](const std::string &arg)
+                           { return arg == "all" || arg == "a"; });
 
     btreeHandler->printAllRecords(moreInfo, groupPages);
 }

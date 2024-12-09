@@ -34,12 +34,15 @@ class BtreeHandler
 
     Record fetchRecord(int offset);
 
-    bool compensation(BtreePage page, BtreeNode node);
+    bool compensation(BtreePage page, BtreeNode node, bool overflow = OVERFLOW);
     void split(BtreePage page, BtreeNode node);
+    void merge(BtreePage page, BtreeNode node);
 
     void readPage(int offset, BtreePage &page, bool lowPriority = false);
     void writePage(int offset, BtreePage &page, bool lowPriority = false);
     void insertNode(BtreeNode node);
+    void deleteNode(BtreeNode node);
+    void replaceKeyWithLeaf(BtreePage page, int key);
 
     void printPage(BtreePage page, bool moreInfo = false, bool groupPages = false);
     void setHeight(int height);
@@ -57,6 +60,8 @@ public:
     void forceFlush();
     OptionalRecord searchRecord(int key);
     void insertRecord(const Record &record);
+    void updateRecord(int key, const Record &record);
+    void deleteRecord(int key);
 
     void printAllRecords(bool moreInfo = false, bool groupPages = false);
     void printRecordsInPages(bool moreInfo = false);

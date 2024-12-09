@@ -30,6 +30,16 @@ void BtreePage::insertNode(BtreeNode node)
     nodes.insert(nodes.begin() + result.first + 1, node);
 }
 
+void BtreePage::removeNode(int index)
+{
+    if (index < nodes.size())
+    {
+        nodes.erase(nodes.begin() + index);
+        return;
+    }
+    throw std::invalid_argument("Index out of bounds");
+}
+
 void BtreePage::clearNodes()
 {
     nodes.clear();
@@ -56,7 +66,7 @@ BtreeNode BtreePage::getNode(int index) const
     {
         return nodes[index];
     }
-    throw std::invalid_argument("Index out of bounds");
+    throw std::out_of_range("Index out of bounds");
 }
 
 void BtreePage::setNode(int index, BtreeNode &node)
@@ -66,7 +76,7 @@ void BtreePage::setNode(int index, BtreeNode &node)
         nodes[index] = node;
         return;
     }
-    throw std::invalid_argument("Index out of bounds");
+    throw std::out_of_range("Index out of bounds");
 }
 
 int BtreePage::getKey(int index) const
@@ -75,7 +85,7 @@ int BtreePage::getKey(int index) const
     {
         return nodes[index + 1].key;
     }
-    throw std::invalid_argument("Index out of bounds");
+    throw std::out_of_range("Index out of bounds");
 }
 
 void BtreePage::setKey(int index, int value)
@@ -85,7 +95,7 @@ void BtreePage::setKey(int index, int value)
         nodes[index + 1].key = value;
         return;
     }
-    throw std::invalid_argument("Index out of bounds");
+    throw std::out_of_range("Index out of bounds");
 }
 
 void BtreePage::setPtr(int index, int value)
@@ -95,7 +105,7 @@ void BtreePage::setPtr(int index, int value)
         nodes[index].pagePtr = value;
         return;
     }
-    throw std::invalid_argument("Index out of bounds");
+    throw std::out_of_range("Index out of bounds");
 }
 
 int BtreePage::getPtr(int index) const
@@ -104,7 +114,7 @@ int BtreePage::getPtr(int index) const
     {
         return nodes[index].pagePtr;
     }
-    throw std::invalid_argument("Index out of bounds");
+    throw std::out_of_range("Index out of bounds");
 }
 
 int BtreePage::getRecordOffset(int index) const
@@ -113,7 +123,7 @@ int BtreePage::getRecordOffset(int index) const
     {
         return nodes[index + 1].recordOffset;
     }
-    throw std::invalid_argument("Index out of bounds");
+    throw std::out_of_range("Index out of bounds");
 }
 
 void BtreePage::setRecordOffset(int index, int value)
@@ -123,7 +133,7 @@ void BtreePage::setRecordOffset(int index, int value)
         nodes[index + 1].recordOffset = value;
         return;
     }
-    throw std::invalid_argument("Index out of bounds");
+    throw std::out_of_range("Index out of bounds");
 }
 
 bool BtreePage::isRoot()

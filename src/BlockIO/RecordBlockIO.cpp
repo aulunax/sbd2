@@ -39,6 +39,8 @@ int RecordBlockIO::readRecordAt(int offset, Record &record)
         return BLOCK_OPERATION_FAILED;
     }
 
+    record.key = *reinterpret_cast<int *>(block.get() + blockIndex);
+    blockIndex += sizeof(int);
     for (int i = 0; i < RECORD_INT_COUNT; i++)
     {
         record.arr[i] = *reinterpret_cast<int *>(block.get() + blockIndex);
@@ -74,6 +76,8 @@ int RecordBlockIO::writeRecordAt(int offset, const Record &record)
 
     modifiedBlock = true;
 
+    memcpy(block.get() + blockIndex, &record.key, sizeof(int));
+    blockIndex += sizeof(int);
     for (int i = 0; i < RECORD_INT_COUNT; i++)
     {
         memcpy(block.get() + blockIndex, &record.arr[i], sizeof(int));

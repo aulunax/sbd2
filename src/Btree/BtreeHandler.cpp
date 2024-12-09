@@ -103,11 +103,13 @@ void BtreeHandler::updateRecord(int key, const Record &record)
     if (record.key != key)
     {
         OptionalRecord searchResult = searchRecord(record.key);
-        if (searchResult == std::nullopt)
+        if (searchResult != std::nullopt)
         {
             std::cout << "Aborting update. Record with key " << record.key << " already exists in database\n";
             return;
         }
+        deleteRecord(key);
+        insertRecord(record);
     }
     else
     {

@@ -244,10 +244,13 @@ void CommandLine::updateRecord(const std::vector<std::string> &args)
 
     int key = std::stoi(args[1]);
     int value = std::stoi(args[2]);
+    int newKey = key;
+    if (args.size() == 4)
+        newKey = std::stoi(args[3]);
 
     Record record;
     record.fill(value);
-    record.key = key;
+    record.key = newKey;
 
     btreeHandler->updateRecord(key, record);
 }

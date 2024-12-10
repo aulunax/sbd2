@@ -240,7 +240,7 @@ std::pair<int, bool> BtreePage::bisectionSearchForKey(int key)
 
 std::pair<int, bool> BtreePage::bisectionSearchForPtr(int ptr)
 {
-    int left = 0, right = getRecordsOnPageCount() - 1, mid;
+    int left = 0, right = getRecordsOnPageCount(), mid;
 
     while (left <= right)
     {

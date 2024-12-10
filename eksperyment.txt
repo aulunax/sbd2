@@ -1,0 +1,147 @@
+D=2:
+
+r 250
+Block reads: 943
+Block writes: 655
+Record block reads: 32
+Record block writes: 31
+Index block reads: 911
+Index block writes: 624
+Cache hits: 1340
+Cache misses: 1033
+
+r 1000
+Block reads: 5151
+Block writes: 2894
+Record block reads: 135
+Record block writes: 128
+Index block reads: 5016
+Index block writes: 2766
+Cache hits: 5417
+Cache misses: 5426
+
+r 2500
+Block reads: 14305
+Block writes: 7370
+Record block reads: 317
+Record block writes: 314
+Index block reads: 13988
+Index block writes: 7056
+Cache hits: 13532
+Cache misses: 14906
+
+r 10000
+Block reads: 68342
+Block writes: 30203
+Record block reads: 1335
+Record block writes: 1284
+Index block reads: 67007
+Index block writes: 28919
+Cache hits: 54698
+Cache misses: 70515
+
+
+r 25000
+Block reads: 185710
+Block writes: 75558
+Record block reads: 3663
+Record block writes: 3356
+Index block reads: 182047
+Index block writes: 72202
+Cache hits: 134718
+Cache misses: 190741
+
+
+
+
+Dla recordCount=10000
+
+D=2
+Block reads: 68451
+Block writes: 30452
+Record block reads: 1262
+Record block writes: 1253
+Index block reads: 67189
+Index block writes: 29199
+Cache hits: 55109
+Cache misses: 70723
+-----------------------------------
+Total records: 9992
+Total pages count: 3080
+Height: 7
+-----------------------------------
+
+D=4
+Block reads: 49086
+Block writes: 24137
+Record block reads: 1258
+Record block writes: 1253
+Index block reads: 47828
+Index block writes: 22884
+Cache hits: 43836
+Cache misses: 49595
+-----------------------------------
+Total records: 9996
+Total pages count: 1514
+Height: 5
+-----------------------------------
+
+D=6
+Block reads: 39877
+Block writes: 21114
+Record block reads: 1256
+Record block writes: 1252
+Index block reads: 38621
+Index block writes: 19862
+Cache hits: 38396
+Cache misses: 39850
+-----------------------------------
+Total records: 9997
+Total pages count: 1003
+Height: 4
+-----------------------------------
+
+D=10
+Block reads: 30853
+Block writes: 18198
+Record block reads: 1261
+Record block writes: 1254
+Index block reads: 29592
+Index block writes: 16944
+Cache hits: 34127
+Cache misses: 30460
+-----------------------------------
+Total records: 9994
+Total pages count: 600
+Height: 4
+-----------------------------------
+
+D=20
+Block reads: 21809
+Block writes: 15135
+Record block reads: 1256
+Record block writes: 1251
+Index block reads: 20553
+Index block writes: 13884
+Cache hits: 30051
+Cache misses: 21320
+-----------------------------------
+Total records: 9996
+Total pages count: 294
+Height: 3
+-----------------------------------
+
+D=50
+Block reads: 12230
+Block writes: 11838
+Record block reads: 1255
+Record block writes: 1251
+Index block reads: 10975
+Index block writes: 10587
+Cache hits: 25450
+Cache misses: 11543
+-----------------------------------
+Total records: 9997
+Total pages count: 119
+Height: 3
+-----------------------------------

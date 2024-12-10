@@ -1,8 +1,8 @@
 # Fdb version 3
-["pdflatex"] 1733854971 "/home/kamilony/sbd2/latex/sprawozdanie2.tex" "sprawozdanie2.pdf" "sprawozdanie2" 1733854972
+["pdflatex"] 1733855429 "/home/kamilony/sbd2/latex/sprawozdanie2.tex" "sprawozdanie2.pdf" "sprawozdanie2" 1733855430
   "/etc/texmf/web2c/texmf.cnf" 1732588823 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/home/kamilony/.texlive2021/texmf-var/web2c/pdftex/pdflatex.fmt" 1732588837 1405753 08d16c51a32d7f51f6a4a98626f2e1ef ""
-  "/home/kamilony/sbd2/latex/sprawozdanie2.tex" 1733854970 14772 1707e2af80ccd55289051cc3d4515c5a ""
+  "/home/kamilony/sbd2/latex/sprawozdanie2.tex" 1733855428 14770 0390dbcb5eba905bdc7d4323cdbcef72 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecbx1200.tfm" 1136768653 3584 402da0b29eafbad07963b1224b222f18 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecbx1440.tfm" 1136768653 3584 13049b61b922a28b158a38aeff75ee9b ""
@@ -171,9 +171,9 @@
   "/usr/share/texmf/fonts/type1/public/cm-super/sftt1200.pfb" 1732588837 167085 68de377d2744a68a88fa40a1f610615a ""
   "/usr/share/texmf/web2c/texmf.cnf" 1644012257 39432 7155514e09a3d69036fac785183a21c2 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1733184493 4379155 98693266ff65f58d9f98aff394de12d2 ""
-  "sprawozdanie2.aux" 1733854971 2207 32f3f21c8e4872c8f38e20c7a238e4b8 "pdflatex"
-  "sprawozdanie2.out" 1733854971 2096 e0a321d3388eb7ea0d5db9276b0acabc "pdflatex"
-  "sprawozdanie2.tex" 1733854970 14772 1707e2af80ccd55289051cc3d4515c5a ""
+  "sprawozdanie2.aux" 1733855430 2207 32f3f21c8e4872c8f38e20c7a238e4b8 "pdflatex"
+  "sprawozdanie2.out" 1733855430 2096 e0a321d3388eb7ea0d5db9276b0acabc "pdflatex"
+  "sprawozdanie2.tex" 1733855428 14770 0390dbcb5eba905bdc7d4323cdbcef72 ""
   (generated)
   "sprawozdanie2.aux"
   "sprawozdanie2.log"

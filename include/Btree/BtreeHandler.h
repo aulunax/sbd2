@@ -47,6 +47,8 @@ class BtreeHandler
     void printPage(BtreePage page, bool moreInfo = false, bool groupPages = false);
     void setHeight(int height);
 
+    void updateParentPtrOfChildren(BtreePage &page);
+
 public:
     int getRootPageOffset();
 

@@ -332,50 +332,141 @@ tekstowy programu.
 Schemat eksperymentu wyglądał następująco:
 
 \begin{enumerate}
-    \item Wygenerowanie plików testowych z losowymi rekordami
-    \item Załadowanie i posortowanie plików testowych
+    \item Ustawienie parametru D B-drzewa zgodnie z przeprowadzanym eksperymentem i kompilacja programu
+    \item Wprowadzenie komend ręcznie do interfejsu tekstowego
     \item Spisanie informacji o każdej operacji do pliku tekstowego
-    \item Wyznaczenie teoretycznych liczb faz i operacji dyskowych na podstawie spisanych informacji
-    \item Wygenerowanie wykresów na podstawie danych eksperymentalnych i teoretycznych
-    \item Porównanie otrzymanych wyników
+    \item Wygenerowanie wykresów na podstawie danych eksperymentalnych
+    \item Analiza otrzymanych wyników
 \end{enumerate}
 
 \subsection{Przygotowania do eksperymentu}
-Aby wygenerować pliki testowe przy użyciu interfejsu tekstowego, należało użyć komend: 
+
+Zmiana parametru D B-drzewa odbywa się poprzez zmianę wartości stałej zdefiniowanej w pliku \texttt{defines.h}
+jako \verb!BTREE_D_FACTOR!.
+\\\\
+Eksperyment polegający na wstawieniu N losowych rekordów do pliku, i spisaniu ich wyników został przeprowadzony
+przez wpisanie kolejnych komend:
 \begin{verbatim}
     clear
     rand N
-    save randN.txt
+    dblockstats
+    print all group
 \end{verbatim}
-gdzie N to liczba rekordów do wygenerowania. Na potrzeby tego eksperymentu zostało
-wygenerowane 7 plików testowych dla \(N = \{2^4, 2^6, 2^8, 2^{10}, 2^{12}, 2^{14}, 2^{16}\}\).
-Komenda \verb|rand| generuje N rekordów, w których każdy elemnt przyjmuje wartość z zakresu od 0 do 999. 
-Do eksperymentu użyłem liczb rekordów, które pozwalają na łatwiejsze obliczenie teoretycznej liczby
-operacji dyskowych.
-\\ \\
-Aby wczytać i posortować utworzone pliki, należało skorzystać z poniższych komend:
-\begin{verbatim}
-    clear
-    load randN.txt
-    sort polyphase quiet
-\end{verbatim}
-Opcja \verb|quiet| sprawia, że jedynie informacje o danej fazie są wypisywane w konsoli, gdyż
-dla większych N wypisywanie zawartość taśm zajmowałoby zbyt długo.
+Gdzie N to liczba rekordów, którą chcemy wstawić do pliku.
 
-Po każdym sortowaniu, spisałem do osobnego pliku dane potrzebne w dalszej części eksperymentu, czyli
-liczbę odczytów i zapisów z dysku, liczbę faz, początkową liczbę runów w pliku.
-
+Na potrzeby tego eksperymentu, N przyjmowało wartości od \(N = \{250, 1000, 2500, 10000, 25000 \} \),
+a współczynnik D B-drzewa przyjmował wartości \(D = \{2, 4, 6, 10, 20, 50 \}\).
+\\\\
+Wyniki eksperymentu zostały zapisane do pliku tekstowego \texttt{eksperyment.txt}.
+Wyniki te następnie zostały użyte do utwożenia wykresów i tabel, które zostały przedstawione w kolejnej sekcji.
 
 \subsection{Wyniki eksperymentu}
 
-\subsection{Podsumowanie}
-Przeprowadzony eksperyment potwierdza poprawność implementacji alogrytmu sortowania polifazowego z wykorzystaniem 
-liczb Fibonacciego. Potwierdza to fakt, że obliczone liczby teoretyczne zgadzają się z wynikami otrzymanymi podczas eksperymentu.
-\\ \\
-Dla dużych plików początkowych jedank, uwidocznił się pewnien błąd względny wynoszący ok. \(2.5\%\) przy liczbie operacji dyskowych.
-Wskazuje on na możliwość wykonywania przez program zbędnych operacji, lecz analiza kodu programu nie uwidoczniła dlaczego
-taki błąd zaistniał.
+\subsubsection{Liczba operacji blokowych}
+\begin{table}[H]
+\centering
+\caption{Średnia liczba operacji blokowych dla różnych wartości D, przy wstawianiu 10000 rekordów}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+D & Odczyty & Zapisy & Średnia liczba operacji na rekord & Wysokość \\
+\hline
+2 & 68451 & 30452 & 9.8982 & 7 \\
+4 & 49086 & 24137 & 7.3252 & 5 \\
+6 & 39877 & 21114 & 6.1009 & 4 \\
+10 & 30853 & 18198 & 4.9080 & 4 \\
+20 & 21809 & 15135 & 3.6959 & 3 \\
+50 & 12230 & 11838 & 2.4075 & 3 \\
+\hline
+\end{tabular}
+\end{table}
 
-Liczba faz za to wydaje się być w pełni poprawna, gdyż błąd między wartościami teoretycznymi i praktycznymi jest w oczekiwanym zakresie.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{../Plots/block_operations_per_record.png}
+    \caption{Średnia liczba operacji blokowych przypadających na pojedynczy rekord}
+    \label{fig:plot1}
+\end{figure}
+
+Jak widać z powyższego wykresu, zwiększenie wartości D B-drzewa powoduje 
+zmniejszenie liczby odczytów i zapisów blokowych przypadających na pojedynczy rekord, 
+co świadczy o lepszej efektywności działania B-drzewa.
+
+\subsubsection{Wypełnienie B-drzewa na dysku}
+
+\begin{table}[H]
+\centering
+\caption{Wypełnienie pliku indeksowego B-drzewa na dysku dla różnych wartości D, przy wstawianiu 10000 rekordów}
+\begin{tabular}{|c|c|c|c|}
+\hline
+D & Rozmiar rekordu (B) & Całkowity rozmiar drzewa(B) & Wypełnienie drzewa (\%) \\
+\hline
+2 & 119904 & 184800 & 64.88 \\
+4 & 119952 & 163512 & 73.36 \\
+6 & 119964 & 156468 & 76.67 \\
+10 & 119928 & 151200 & 79.32 \\
+20 & 119952 & 144648 & 82.93 \\
+50 & 119964 & 144228 & 83.18 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{../Plots/tree_fill.png}
+    \caption{Wypełnienie pliku indeksowego na dysku}
+    \label{fig:plot2}
+\end{figure}
+
+Wyniki można odczytać tak, że na jeden rekord faktycznie zapisany w strukturze logicznej
+B-drzea przypada X\% rekordu zapisanego na dysku.
+
+Z powyższego wykresu można zauważyć, że zwiększenie wartości parametru D B-drzewa powoduje
+również zwiększenie poziomu wypełnienia pliku indeksowego na dysku. Wzrost ten jest
+znaczący dla małych wartości D, ale dla większych wartości D, dochodzi do stagnacji wypełnienia
+pliku na dysku.
+\\\\
+Wynika z tego, że optymalne wartości parametru D dla B-drzewa
+nie powinny być bardzo małe, gdyż wtedy plik indeksowy na dysku jest wypełniony bardziej nieefektywnie,
+niż dla dużych waartości.
+
+\subsubsection{Ilość dodawanych rekordów}
+\begin{table}[H]
+\centering
+\caption{Liczba operacji blokowych dla różnych ilości rekordów}
+\begin{tabular}{|c|c|c|}
+\hline
+Liczba rekordów & D = 2 & D = 10 \\
+\hline
+250 & 1598 & 472 \\
+1000 & 8045 & 3067 \\
+2500 & 21675 & 10126 \\
+10000 & 98545 & 48649 \\
+25000 & 261268 & 133576 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{../Plots/disk_operations_by_record_count.png}
+    \caption{Liczba operacji blokowych w zależności od ilości rekordów}
+    \label{fig:plot3}
+\end{figure}
+
+Jak widać na powyższym wykresie, zzarówno liczba dodawanych rekordów jak i parametr D ma wpływ 
+na liczbę wykonywanych operacji blokowych na B-drzewie. 
+
+Zwiększenie liczby rekordów powoduje szybszy od liniowego wzrost liczby operacji blokowych,
+co można wyjaśnić faktem, że dla większej ilości rekordów w B-drzewie,
+istnieje możliwość że wysokość drzewa wzrosła, a operacje na większym drzewie
+wymagają przynajmniej o jedną więcej operację blokową na operacje na rekordzie.
+
+Można też zauważyć, że dla większego D=10, liczba operacji blokowych jest mniejsza od D=2,
+ale mimo to kształt obu wykresów jest bardzo podobny.
+
+
+\subsection{Podsumowanie}
+
+
 
 \end{document}

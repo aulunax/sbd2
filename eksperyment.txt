@@ -51,7 +51,57 @@ Index block writes: 72202
 Cache hits: 134718
 Cache misses: 190741
 
+D=10
+r=250
+Block reads: 222
+Block writes: 250
+Record block reads: 32
+Record block writes: 31
+Index block reads: 190
+Index block writes: 219
+Cache hits: 794
+Cache misses: 249
 
+r 1000
+Block reads: 1632
+Block writes: 1435
+Record block reads: 125
+Record block writes: 124
+Index block reads: 1507
+Index block writes: 1311
+Cache hits: 3460
+Cache misses: 1689
+
+r 2500
+Block reads: 6050
+Block writes: 4076
+Record block reads: 315
+Record block writes: 313
+Index block reads: 5735
+Index block writes: 3763
+Cache hits: 8339
+Cache misses: 6043
+
+r 10000
+Block reads: 30458
+Block writes: 18191
+Record block reads: 1258
+Record block writes: 1253
+Index block reads: 29200
+Index block writes: 16938
+Cache hits: 34231
+Cache misses: 30030
+
+
+r 25000
+Block reads: 87358
+Block writes: 46218
+Record block reads: 3173
+Record block writes: 3145
+Index block reads: 84185
+Index block writes: 43073
+Cache hits: 85989
+Cache misses: 86012
 
 
 Dla recordCount=10000

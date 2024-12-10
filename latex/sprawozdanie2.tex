@@ -1,0 +1,381 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{listings}
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{caption}
+\usepackage{tcolorbox}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{float}     % for the H placement specifier
+
+\DeclareCaptionLabelFormat{customTable}{Tabela #2}
+\captionsetup[table]{
+    labelformat=customTable,
+    labelsep=colon
+}
+
+\DeclareCaptionLabelFormat{customFigure}{Wykres #2}
+\captionsetup[figure]{
+    labelformat=customFigure,
+    labelsep=colon
+}
+
+\geometry{a4paper, margin=1in}
+
+\lstset{
+    inputencoding=utf8x,
+    extendedchars=\true,
+    literate={ą}{{\k{a}}}1
+             {Ą}{{\k{A}}}1
+             {ę}{{\k{e}}}1
+             {Ę}{{\k{E}}}1
+             {ó}{{\'o}}1
+             {Ó}{{\'O}}1
+             {ś}{{\'s}}1
+             {Ś}{{\'S}}1
+             {ł}{{\l{}}}1
+             {Ł}{{\L{}}}1
+             {ż}{{\.z}}1
+             {Ż}{{\.Z}}1
+             {ź}{{\'z}}1
+             {Ź}{{\'Z}}1
+             {ć}{{\'c}}1
+             {Ć}{{\'C}}1
+             {ń}{{\'n}}1
+             {Ń}{{\'N}}1
+}
+
+
+\title{Struktury Baz Danych Projekt 2 - Sprawozdanie z indeksowej organizacji plików z użyciem struktury B-drzewa}
+\author{Kamil Szabłowski, 193248}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Wprowadzenie}
+Zadaniem projektu była implementacja jednego z wybranych algorytmów organizacji plików indeksowych.
+Zaimplementowanym przeze mnie algorytmem jest algorytm \emph{B-drzewa}.
+
+Użytym w projekcie typem rekordu pliku są ciągi 10 \emph{liczb} z dodatkowycm kluczem, 
+będącym liczbą natruralną większą od 0. Kryterium sortowania rekordu jest wartość klucza.
+Za \emph{liczbę} będącą elementem rekordu uznaję 32-bitową liczbę całkowita ze znakiem. 
+Poniżej przedstawione został przykład takiego rekordu:
+
+\[
+\begin{array}{|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+1 & 23 & -45 & 67 & 12 & -8 & 34 & 0 & 29 & -16 & 5 \\
+\hline
+\end{array}
+\]
+
+Pierwszy element powyższego rekordu to kluczz wynoszący 1, reszta stanowi ciąg 10 liczb.
+
+Rozmiar rekordu wynosi w takim razie 44 bajtów (11 liczb całkowitych 4-bajtowych).
+Przyjęty rozmiar bloku dyskowego pliku danych na potrzeby tego eksperymentu wynosi 364 bajtów.
+
+
+\section{Opis implementacji}
+Użytą w tym projekcie metodą organizacji pliku jest użycie struktury B-drzewa.
+\\\\
+Alogorytmy wykorzystane do wstawianie, usuwania i wyszukiwania rekordów w B-drzewie są analogiczne do tych
+przedstawionych na wykładzie.
+Modyfikacja rekordu polega na usunięciu starego rekordu i dodaniu nowego rekordu z nowym kluczem, chyba że
+nie dokonujemy zmiany klucza, wtedy modyfikowana jest wartość rekordu bezpośrednio w pliku z danymi, po uwczesnym
+wyszukaniu klucza.
+\\\\
+W mojej implementacji na stronę B-drzewa zapisaną do pliku składają się:
+\begin{itemize}
+    \item Wskaźnik na stronę rodzica (liczba całkowita, 4B)
+    \item Liczba rekordów w stronie (liczba całkowita, 4B)
+    \item Lewy skrajny wskaźnik na stronę, z rekordami mniejszymi od wszystkich innych należących do obecnej strony (liczba całkowita, 4B)
+    \item Od \(1\) do \(2d\) węzłów, gdzie na dany węzeł składa się:
+    \begin{itemize}
+        \item Wartość klucza rekordu (liczba całkowita, 4B)
+        \item Offset rekordu o danym kluczu w pliku z danymi (liczba całkowita, 4B)
+        \item Wskaźnik na stronę z rekordami większymi od klucza w tym węźle, ale mniejszymi od klucza w następnym węźle (liczba całkowita, 4B)
+    \end{itemize}
+\end{itemize}
+
+Nie zależnie od ilości węzłów w pliku indeksowym B-drzewa, zapisana (lub odczytana) strona
+z dysku ma zawsze rozmiar \(4+4+4+2d*12 = 12+24d\) bajtów.
+
+Strona w pamięci w programie jest prawie identyczna jak strona zapisana na dysku, z tą różnicą, że
+lewy skrajny wskaźnik na stronę jest zastąpiony dodatkowym węzłem 0, w którym poza wartością wskaźnika na 
+stronę-dziecko, wartość klucza i rekordu ustawiona jest na NULL
+
+Jeśli chodzi o plik z danymi, to podobnie jak w przypadku pierwszego projektu, 
+rekordy są zapisywane binarnie, jeden po drugim, bez żadnych dodatkowych informacji.
+
+\subsection{Opis buforowania}
+ 
+\section{Specyfikacja plików testowych}
+Plikiem testowym jest plik tekstowy (.txt) o określonej poniżej strukturze.
+\subsection{Struktura pliku testowego}
+Plik testowy składa się z komend oddzielonych znakime nowej linii.
+\\\\
+Komendy dostępne do użycia w pliku testowym są analogiczne co do komend dostępnych w interfejsie tekstowym.
+Lista dostępnych komend może zostać wyświetlona przy użyciu komendy \verb!help!. Dodatkowe komendy do debuggowania
+programu są pokazane po użyciu komendy \verb!help debug!.
+\\\\
+Output komendy \verb!help!:
+
+\begin{tcolorbox}[colframe=black!75, colback=white!95, title=Output komendy \texttt{help}]
+\begin{verbatim}
+List of available commands
+TIP: Most commands can be used by using 
+first letters of each word in the command
+Example: 'am 5' is the same as 'addmulti 5'
+--------------------------------------------------------------------
+help                                     Show this help message
+help debug                               Show help relating to debug
+setcompensation [true/false]             Toggle compensation
+clear                                    Clear all the files
+rand [n]                                 Insert n random records
+update [key] [value] [newKey: OPTIONAL]  Update record with given key
+insert [key] [value]                     Insert record into the file
+search [key]                             Search for record with key
+print [group] [all]                      Prints all records in db
+loadtest [filename]                      Loads test file
+\end{verbatim}
+\end{tcolorbox}
+
+Output komendy \verb!help debug!:
+
+\begin{tcolorbox}[colframe=black!75, colback=white!95, title=Output komendy \texttt{help debug}]
+\begin{verbatim}
+List of available debug commands
+--------------------------------------------------------------------
+dblockstats              Prints block stats
+dforceflush              Forces a flush of the files
+dgetrecord [n]           Gets a record at offset (data file)n
+\end{verbatim}
+\end{tcolorbox}
+
+
+Przykład poprawnie ustrukturyzowanego pliku testowego:
+
+\begin{tcolorbox}[colframe=black!75, colback=white!95, title=Plik: \texttt{text.txt}]
+\begin{verbatim}
+clear
+insert 1 5
+insert 2 10
+insert 3 15
+insert 4 20
+insert 5 25
+delete 2
+search 3
+search 2
+dblockstats
+print all group
+print
+\end{verbatim}
+\end{tcolorbox}
+
+Poniższy plik testowy wykona dokładnie to samo co powyższy:
+\begin{tcolorbox}[colframe=black!75, colback=white!95, title=Plik: \texttt{text.txt}]
+\begin{verbatim}
+c
+i 1 5
+i 2 10
+i 3 15
+i 4 20
+i 5 25
+d 2
+s 3
+s 2
+dbs
+p a g
+p
+\end{verbatim}
+\end{tcolorbox}
+
+Tak spreparowany plik może bezproblemu zostać załadowany do interfejsu tekstowego.
+\subsection{Załadowanie i uruchomienie pliku testowego}
+Aby załadować plik testowy z dysku, wystarczy w interfejsie tekstowym użyć komendy \verb!loadtest nazwa_pliku.txt!,
+gdzie zamiast \emph{nazwa\_pliku.txt} należy wpisać ścieżkę do docelowego pliku testowego, który ma zostać załadowany.
+Ścieżka może być bezwzględna, lub względna - zależna od katalogu w którym został uruchomiony interfejs tekstowy.
+
+\section{Sposób prezentacji wyników działania programu}
+
+Po uruchomieniu programu, organizowany plik indeksowy orazz z danymi jest pusty i nie zawiera żadnych rekordów ani stron.
+
+Aby dodać rekordy do bazy danych należzy użyć jednej z nastepujących komend:
+
+\begin{itemize}
+    \item \verb!insert [key] [value]! - próbuje dodać rekord o danym kluczu i wartości do bazy danych
+    \item \verb!rand [n]! - próbuje dodać n losowych rekordów do bazy danych
+\end{itemize}
+
+Analogicznie, usunięcie rekordu z bazy danych odbywa się przy użyciu komendy \verb!delete [key]!.
+
+Wyszukiwanie rekordu w bazie danych odbywa się przy użyciu komendy \verb!search [key]!.
+
+Modyfikacja rekordu w bazie danych odbywa się przy użyciu komendy \verb!update [key] [value] [newKey: OPTIONAL]!
+
+Po użyciu komendy \verb!print! bez żadnych parametrów, program wypisuje zawartość bazy danych w formie rekordów, od najmniejszego
+do największego klucza w następującym formacie:
+Przykład:
+\begin{tcolorbox}[colframe=black!75, colback=white!95, title=Output komendy \texttt{print}]
+\begin{verbatim}
+(1) 10 10 10 10 10 10 10 10 10 10
+(2) 20 20 20 20 20 20 20 20 20 20
+(3) 30 30 30 30 30 30 30 30 30 30
+(4) 40 40 40 40 40 40 40 40 40 40
+(5) 50 50 50 50 50 50 50 50 50 50
+\end{verbatim}
+\end{tcolorbox}
+
+Liczba w nawiasie to klucz rekordu, podczas gdy liczby po spacji to wartości rekordu, czyli liczby należące do ciągu.
+
+Po użyciu komendy \verb!print! z parametrem \verb!group!, program wypisuje zawartość bazy danych w formie rekordów,
+ale tym razem grupując rekordy znajdujące się na jednej stronie B-drzewa.
+
+Po użyciu komendy \verb!print! z parametrem \verb!all!, program wypisuje zawartość bazy danych w pełnej formie. Przykład:
+\begin{tcolorbox}[colframe=black!75, colback=white!95, title=Output komendy \texttt{print all}]
+\begin{verbatim}
+RecordOffset: 0 | PageOffset: 0 | ParentPageOffset: 1 
+| LeftPagePtr: -1 | RightPagePtr: -1
+(1) 1 1 1 1 1 1 1 1 1 1 
+
+RecordOffset: 1 | PageOffset: 0 | ParentPageOffset: 1 
+| LeftPagePtr: -1 | RightPagePtr: -1
+(2) 2 2 2 2 2 2 2 2 2 2 
+
+RecordOffset: 2 | PageOffset: 1 | ParentPageOffset: -1 
+| LeftPagePtr: 0 | RightPagePtr: 2
+(3) 3 3 3 3 3 3 3 3 3 3 
+
+RecordOffset: 3 | PageOffset: 2 | ParentPageOffset: 1 
+| LeftPagePtr: -1 | RightPagePtr: -1
+(4) 4 4 4 4 4 4 4 4 4 4 
+
+RecordOffset: 4 | PageOffset: 2 | ParentPageOffset: 1 
+| LeftPagePtr: -1 | RightPagePtr: -1
+(5) 5 5 5 5 5 5 5 5 5 5 
+
+-----------------------------------
+Total records: 5
+Total pages count: 3
+Height: 2
+-----------------------------------
+\end{verbatim}
+\end{tcolorbox}
+
+Poza wyświetleniem klucza i wartości rekordu, program wypisuje również informacje o stronach B-drzewa, 
+takie jak:
+\begin{itemize}
+    \item \verb!RecordOffset! - offset rekordu w pliku z danymi
+    \item \verb!PageOffset! - offset strony w pliku indeksowym
+    \item \verb!ParentPageOffset! - offset strony rodzica w pliku indeksowym
+    \item \verb!LeftPagePtr! - offset strony dziecka z rekordami mniejszymi od klucza w obecnym węźle
+    \item \verb!RightPagePtr! - offset strony dziecka z rekordami większymi od klucza w obecnym węźle
+\end{itemize}
+
+Wartość \(-1\) w polach \verb!LeftPagePtr!, \verb!RightPagePtr! oraz \verb!ParentPageOffset! oznacza, 
+że dany wskaźnik nie wskazuje na nic, czyli węzeł nie ma dzieci, bądź rodzica (tylko korzeń).
+
+Dodatkowo wyświetlana jest informacja o całkowitej liczbie rekordów, 
+liczbie stron oraz wysokości drzewa.
+
+
+Po użyciu komendy \verb!print all group! program wypisuje zawartość bazy danych w pełnej formie, 
+ale tym razem grupując rekordy po stronach B-drzewa. Przykład:
+\begin{tcolorbox}[colframe=black!75, colback=white!95, title=Output komendy \texttt{print all group}]
+\begin{verbatim}
+-------- Page 0 ----------
+RecordOffset: 0 | PageOffset: 0 | ParentPageOffset: 1 
+| LeftPagePtr: -1 | RightPagePtr: -1
+(1) 1 1 1 1 1 1 1 1 1 1 
+
+RecordOffset: 1 | PageOffset: 0 | ParentPageOffset: 1 
+| LeftPagePtr: -1 | RightPagePtr: -1
+(2) 2 2 2 2 2 2 2 2 2 2 
+
+-------- Page 1 ----------
+RecordOffset: 2 | PageOffset: 1 | ParentPageOffset: -1 
+| LeftPagePtr: 0 | RightPagePtr: 2
+(3) 3 3 3 3 3 3 3 3 3 3 
+
+-------- Page 2 ----------
+RecordOffset: 3 | PageOffset: 2 | ParentPageOffset: 1 
+| LeftPagePtr: -1 | RightPagePtr: -1
+(4) 4 4 4 4 4 4 4 4 4 4 
+
+RecordOffset: 4 | PageOffset: 2 | ParentPageOffset: 1 
+| LeftPagePtr: -1 | RightPagePtr: -1
+(5) 5 5 5 5 5 5 5 5 5 5 
+
+-----------------------------------
+Total records: 5
+Total pages count: 3
+Height: 2
+-----------------------------------
+\end{verbatim}
+\end{tcolorbox}
+
+Jak widać powyżej, rekordy są grupowane po stronach B-drzewa, co w przypadku większej ilości rekordów może spowodować,
+że rekordy nie są wyświetlone w kolejności rosnącej klucza.
+
+\section{Eksperyment}
+\subsection{Konstrukcja eksperymentu}
+Do przeprowadzenia eksperymentu wykorzystane zostały funkcje udostępniane prze interfejs
+tekstowy programu.
+
+Schemat eksperymentu wyglądał następująco:
+
+\begin{enumerate}
+    \item Wygenerowanie plików testowych z losowymi rekordami
+    \item Załadowanie i posortowanie plików testowych
+    \item Spisanie informacji o każdym sortowaniu do pliku tekstowego
+    \item Wyznaczenie teoretycznych liczb faz i operacji dyskowych na podstawie spisanych informacji
+    \item Wygenerowanie wykresów na podstawie danych eksperymentalnych i teoretycznych
+    \item Porównanie otrzymanych wyników
+\end{enumerate}
+
+\subsection{Przygotowania do eksperymentu}
+Aby wygenerować pliki testowe przy użyciu interfejsu tekstowego, należało użyć komend: 
+\begin{verbatim}
+    clear
+    rand N
+    save randN.txt
+\end{verbatim}
+gdzie N to liczba rekordów do wygenerowania. Na potrzeby tego eksperymentu zostało
+wygenerowane 7 plików testowych dla \(N = \{2^4, 2^6, 2^8, 2^{10}, 2^{12}, 2^{14}, 2^{16}\}\).
+Komenda \verb|rand| generuje N rekordów, w których każdy elemnt przyjmuje wartość z zakresu od 0 do 999. 
+Do eksperymentu użyłem liczb rekordów, które pozwalają na łatwiejsze obliczenie teoretycznej liczby
+operacji dyskowych.
+\\ \\
+Aby wczytać i posortować utworzone pliki, należało skorzystać z poniższych komend:
+\begin{verbatim}
+    clear
+    load randN.txt
+    sort polyphase quiet
+\end{verbatim}
+Opcja \verb|quiet| sprawia, że jedynie informacje o danej fazie są wypisywane w konsoli, gdyż
+dla większych N wypisywanie zawartość taśm zajmowałoby zbyt długo.
+
+Po każdym sortowaniu, spisałem do osobnego pliku dane potrzebne w dalszej części eksperymentu, czyli
+liczbę odczytów i zapisów z dysku, liczbę faz, początkową liczbę runów w pliku.
+
+
+\subsection{Wyniki eksperymentu}
+
+\subsection{Podsumowanie}
+Przeprowadzony eksperyment potwierdza poprawność implementacji alogrytmu sortowania polifazowego z wykorzystaniem 
+liczb Fibonacciego. Potwierdza to fakt, że obliczone liczby teoretyczne zgadzają się z wynikami otrzymanymi podczas eksperymentu.
+\\ \\
+Dla dużych plików początkowych jedank, uwidocznił się pewnien błąd względny wynoszący ok. \(2.5\%\) przy liczbie operacji dyskowych.
+Wskazuje on na możliwość wykonywania przez program zbędnych operacji, lecz analiza kodu programu nie uwidoczniła dlaczego
+taki błąd zaistniał.
+
+Liczba faz za to wydaje się być w pełni poprawna, gdyż błąd między wartościami teoretycznymi i praktycznymi jest w oczekiwanym zakresie.
+
+\end{document}

@@ -248,6 +248,12 @@ void CommandLine::updateRecord(const std::vector<std::string> &args)
     if (args.size() == 4)
         newKey = std::stoi(args[3]);
 
+    if (newKey < 1)
+    {
+        std::cout << "Error: New key must be greater than 0\n";
+        return;
+    }
+
     Record record;
     record.fill(value);
     record.key = newKey;
@@ -370,6 +376,12 @@ void CommandLine::insertRecord(const std::vector<std::string> &args)
     if (args.size() == 3)
     {
         value = std::stoi(args[2]);
+    }
+
+    if (key < 1)
+    {
+        std::cout << "Error: New key must be greater than 0\n";
+        return;
     }
 
     Record record;

@@ -2,7 +2,7 @@
 
 void Record::Randomize()
 {
-    key = rand() % MAX_KEY_VALUE;
+    key = rand() % MAX_KEY_VALUE + 1;
     for (int i = 0; i < RECORD_INT_COUNT; i++)
     {
         arr[i] = rand() % 1000;

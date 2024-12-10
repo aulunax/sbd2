@@ -31,7 +31,9 @@ public:
     void setParentOffset(int parentOffset);
     void setThisPageOffset(int thisPageOffset) { this->thisPageOffset = thisPageOffset; }
 
+    // returns key if found else returns ptr to node that should contain key
     std::pair<int, bool> bisectionSearchForKey(int key);
+    // returns ptr if found else returns node that should contain ptr
     std::pair<int, bool> bisectionSearchForPtr(int ptr);
 
     bool isRoot();

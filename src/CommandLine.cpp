@@ -208,6 +208,7 @@ void CommandLine::searchRecord(const std::vector<std::string> &args)
     {
         std::cout << "Result: " << result->toString() << "\n";
     }
+    printBlockStatistics({});
 }
 
 void CommandLine::toggleCompensation(const std::vector<std::string> &args)
@@ -259,6 +260,7 @@ void CommandLine::updateRecord(const std::vector<std::string> &args)
     record.key = newKey;
 
     btreeHandler->updateRecord(key, record);
+    printBlockStatistics({});
 }
 
 void CommandLine::removeRecord(const std::vector<std::string> &args)
@@ -272,6 +274,7 @@ void CommandLine::removeRecord(const std::vector<std::string> &args)
     int key = std::stoi(args[1]);
 
     btreeHandler->deleteRecord(key);
+    printBlockStatistics({});
 }
 
 void CommandLine::readRawRecordToFile(const std::vector<std::string> &args)
@@ -388,6 +391,8 @@ void CommandLine::insertRecord(const std::vector<std::string> &args)
     record.fill(value);
     record.key = key;
     btreeHandler->insertRecord(record);
+
+    printBlockStatistics({});
 }
 
 void CommandLine::insertRandomRecords(const std::vector<std::string> &args)
@@ -408,4 +413,5 @@ void CommandLine::insertRandomRecords(const std::vector<std::string> &args)
     }
 
     std::cout << "Added " << recordCount << " records to the file\n";
+    printBlockStatistics({});
 }

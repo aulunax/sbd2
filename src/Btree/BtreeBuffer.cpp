@@ -38,6 +38,7 @@ void BtreeBuffer::pushPage(BtreePage &page, int pageOffset, IndexBlockIO *indexF
             newBufferPage.modified = true;
         }
 
+        // checking height before adding, so buffer size is height+1
         if (pageBuffer.size() > height)
         {
             if (pageBuffer.back().modified)

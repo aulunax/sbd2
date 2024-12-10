@@ -115,6 +115,20 @@ Jeśli chodzi o plik z danymi, to podobnie jak w przypadku pierwszego projektu,
 rekordy są zapisywane binarnie, jeden po drugim, bez żadnych dodatkowych informacji.
 
 \subsection{Opis buforowania}
+
+Wykorzystane przeze mnie buforowanie polega na zapisywaniu do pamięci operacji, 
+h+1 ostatnio używanych stron B-drzewa, gdzie h to wysokość drzewa.
+
+Ważne jest jednak, że h stron bufora wykorzystywane jest w sposób normalny, opisany powyżej,
+podczas gdy ostatnia strona bufora, ta o najniższym priorytecie (najstarsza),
+ma specjalną funkcję.
+
+Podczas zapisywania lub czytania strony, programistycznie możzna wskazać czy
+operacja ta powinna być \texttt{lowPriority}. Jeśli tak, to strona ta jest zapisywana
+na końcu bufora, a nie na początku, co oznacza, że zostanie ona usunięta jako pierwsza.
+Jest to potrzebne by podczas operacji takich jak merge czy split, zachować w buforze
+strony przez które się już przeszło. Mechanizm ten gwarantuje również, że root zawsze
+znajduje się w pamięci, co znacząco zmniejsza liczbę operacji blokowych.
  
 \section{Specyfikacja plików testowych}
 Plikiem testowym jest plik tekstowy (.txt) o określonej poniżej strukturze.
@@ -468,10 +482,6 @@ wymagają przynajmniej o jedną więcej operację blokową na operacje na rekord
 
 Można też zauważyć, że dla większego D=10, liczba operacji blokowych jest mniejsza od D=2,
 ale mimo to kształt obu wykresów jest bardzo podobny.
-
-
-\subsection{Podsumowanie}
-
 
 
 \end{document}

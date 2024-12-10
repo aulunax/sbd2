@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2024.11.26)  10 DEC 2024 22:37
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2024.11.26)  10 DEC 2024 23:19
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -605,87 +605,87 @@ Overfull \hbox (10.98703pt too wide) in paragraph at lines 103--104
 []\T1/cmr/m/n/12 Wska¹nik na stron¦ z reko-r-dami wi¦k-szymi od klucza w tym w¦¹le, ale mniejszymi
  []
 
-LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 125.
+LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 127.
 (/usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd
 File: t1cmtt.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 )
-Underfull \hbox (badness 10000) in paragraph at lines 122--129
+Underfull \hbox (badness 10000) in paragraph at lines 136--143
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 122--129
+Underfull \hbox (badness 10000) in paragraph at lines 136--143
 
  []
 
 
-Overfull \hbox (4.30103pt too wide) in paragraph at lines 142--142
+Overfull \hbox (4.30103pt too wide) in paragraph at lines 156--156
 []\T1/cmtt/m/n/12 update [key] [value] [newKey: OPTIONAL]  Update record with given key[] 
  []
 
 [2] [3]
-Overfull \hbox (4.00504pt too wide) in paragraph at lines 219--220
+Overfull \hbox (4.00504pt too wide) in paragraph at lines 233--234
 []\T1/cmr/m/n/12 Wyszukiwanie reko-rdu w bazie danych odbywa si¦ przy u»y-ciu komendy [][]\T1/cmtt/m/n/12 search [key][]\T1/cmr/m/n/12 . 
  []
 
 
-Overfull \hbox (157.57173pt too wide) in paragraph at lines 221--222
+Overfull \hbox (157.57173pt too wide) in paragraph at lines 235--236
 []\T1/cmr/m/n/12 Modyfikacja reko-rdu w bazie danych odbywa si¦ przy u»y-ciu komendy [][]\T1/cmtt/m/n/12 update [key] [value] [newKey: OPTIONAL] 
  []
 
 [4] [5] [6]
-Underfull \hbox (badness 10000) in paragraph at lines 344--349
+Underfull \hbox (badness 10000) in paragraph at lines 358--363
 
  []
 
 
-Overfull \hbox (56.33052pt too wide) in paragraph at lines 357--362
+Overfull \hbox (56.33052pt too wide) in paragraph at lines 371--376
 []\T1/cmr/m/n/12 Na potrzeby tego ekspery-mentu, N przyj-mowaªo warto±ci od $\OML/cmm/m/it/12 N \OT1/cmr/m/n/12 = \OMS/cmsy/m/n/12 f\OT1/cmr/m/n/12 250\OML/cmm/m/it/12 ; \OT1/cmr/m/n/12 1000\OML/cmm/m/it/12 ; \OT1/cmr/m/n/12 2500\OML/cmm/m/it/12 ; \OT1/cmr/m/n/12 10000\OML/cmm/m/it/12 ; \OT1/cmr/m/n/12 25000\OMS/cmsy/m/n/12 g$\T1/cmr/m/n/12 ,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 357--362
+Underfull \hbox (badness 10000) in paragraph at lines 371--376
 
  []
 
-<../Plots/block_operations_per_record.png, id=104, 722.7pt x 433.62pt>
+<../Plots/block_operations_per_record.png, id=100, 722.7pt x 433.62pt>
 File: ../Plots/block_operations_per_record.png Graphic file (type png)
 <use ../Plots/block_operations_per_record.png>
-Package pdftex.def Info: ../Plots/block_operations_per_record.png  used on input line 385.
+Package pdftex.def Info: ../Plots/block_operations_per_record.png  used on input line 399.
 (pdftex.def)             Requested size: 452.9679pt x 271.77934pt.
 [7]
-<../Plots/tree_fill.png, id=117, 722.7pt x 433.62pt>
+<../Plots/tree_fill.png, id=113, 722.7pt x 433.62pt>
 File: ../Plots/tree_fill.png Graphic file (type png)
 <use ../Plots/tree_fill.png>
-Package pdftex.def Info: ../Plots/tree_fill.png  used on input line 420.
+Package pdftex.def Info: ../Plots/tree_fill.png  used on input line 434.
 (pdftex.def)             Requested size: 452.9679pt x 271.77934pt.
  [8 <../Plots/block_operations_per_record.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 428--436
+Underfull \hbox (badness 10000) in paragraph at lines 442--450
 
  []
 
-<../Plots/disk_operations_by_record_count.png, id=125, 722.7pt x 433.62pt>
+<../Plots/disk_operations_by_record_count.png, id=121, 722.7pt x 433.62pt>
 File: ../Plots/disk_operations_by_record_count.png Graphic file (type png)
 <use ../Plots/disk_operations_by_record_count.png>
-Package pdftex.def Info: ../Plots/disk_operations_by_record_count.png  used on input line 456.
+Package pdftex.def Info: ../Plots/disk_operations_by_record_count.png  used on input line 470.
 (pdftex.def)             Requested size: 452.9679pt x 271.77934pt.
 [9 <../Plots/tree_fill.png>] [10 <../Plots/disk_operations_by_record_count.png>] (./sprawozdanie2.aux)
 Package rerunfilecheck Info: File `sprawozdanie2.out' has not changed.
-(rerunfilecheck)             Checksum: 986102D262B611FA8EE7FF0BC1F572E2;2728.
+(rerunfilecheck)             Checksum: CDF829B5AD08AC0BA1F192DA4C66C314;2610.
  ) 
 Here is how much of TeX's memory you used:
- 22938 strings out of 480247
- 418832 string characters out of 5896105
- 688924 words of memory out of 5000000
- 40488 multiletter control sequences out of 15000+600000
+ 22936 strings out of 480247
+ 418802 string characters out of 5896105
+ 688929 words of memory out of 5000000
+ 40487 multiletter control sequences out of 15000+600000
  483237 words of font info for 67 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  83i,8n,89p,473b,476s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-t1.enc}{/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-ts1.enc}</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx1200.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx1440.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx1728.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1200.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1440.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm2074.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfti1200.pfb></usr/share/texmf/fonts/type1/public/cm-super/sftt1200.pfb>
-Output written on sprawozdanie2.pdf (10 pages, 341177 bytes).
+Output written on sprawozdanie2.pdf (10 pages, 341758 bytes).
 PDF statistics:
- 203 PDF objects out of 1000 (max. 8388607)
- 160 compressed objects within 2 object streams
- 37 named destinations out of 1000 (max. 500000)
- 148 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 196 PDF objects out of 1000 (max. 8388607)
+ 153 compressed objects within 2 object streams
+ 36 named destinations out of 1000 (max. 500000)
+ 140 words of extra memory for PDF output out of 10000 (max. 10000000)
 

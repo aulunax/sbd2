@@ -132,6 +132,7 @@ void BtreeHandler::deleteRecord(int key)
     // currentPage contains the page the node was deleted from
     replaceKeyWithLeaf(currentPage, key);
 
+    // if the current page is root and has no records, remove it
     if (currentPage.getThisPageOffset() == rootPagePtr && currentPage.getRecordsOnPageCount() == 0)
     {
         setHeight(height - 1);
@@ -316,6 +317,7 @@ void BtreeHandler::insertNode(BtreeNode node)
 
 bool BtreeHandler::compensation(BtreePage page, BtreeNode node, bool overflow)
 {
+    // cant do compensation on root
     if (page.getParentOffset() == NULL_DATA)
         return false;
 
@@ -324,6 +326,7 @@ bool BtreeHandler::compensation(BtreePage page, BtreeNode node, bool overflow)
 
     std::pair<int, bool> result;
 
+    // get the parent node that points to the page (why did i do this to myself)
     if (overflow == OVERFLOW)
         result = parent.bisectionSearchForKey(node.key);
     else
@@ -331,6 +334,7 @@ bool BtreeHandler::compensation(BtreePage page, BtreeNode node, bool overflow)
 
     BtreePage sibling;
 
+    // read left sibling if possible
     int parentMidNode = -1;
     if (result.first != 0)
     {
@@ -338,6 +342,7 @@ bool BtreeHandler::compensation(BtreePage page, BtreeNode node, bool overflow)
         parentMidNode = result.first;
     }
 
+    // read right sibling if posssible and necessary
     if ((((overflow == OVERFLOW && sibling.getRecordsOnPageCount() == 2 * BTREE_D_FACTOR) ||
           (overflow == UNDERFLOW && sibling.getRecordsOnPageCount() == BTREE_D_FACTOR)) ||
          parentMidNode == -1) &&
@@ -416,6 +421,7 @@ void BtreeHandler::split(BtreePage page, BtreeNode node)
     bool isRoot = (page.getParentOffset() == NULL_DATA);
     int nodeIndex = page.bisectionSearchForKey(node.key).first;
 
+    // sort nodes from page and add the new node
     std::vector<BtreeNode> sortedNodes;
     for (int i = 0; i <= page.getRecordsOnPageCount(); i++)
     {
@@ -460,9 +466,11 @@ void BtreeHandler::split(BtreePage page, BtreeNode node)
         newPage.setThisPageOffset(indexLastPageOffset);
         indexLastPageOffset++;
 
+        // fixing ptrs
         newRootPage.getNodes()[1].pagePtr = newPage.getThisPageOffset();
         page.setParentOffset(newRootPage.getThisPageOffset());
 
+        // changing root
         rootPagePtr = newRootPage.getThisPageOffset();
 
         writePage(page.getThisPageOffset(), page);
@@ -483,6 +491,7 @@ void BtreeHandler::split(BtreePage page, BtreeNode node)
         newPage.setThisPageOffset(indexLastPageOffset);
         indexLastPageOffset++;
 
+        // read parent page to current page, so it can be used as base for the next insertNode()
         currentPagePtr = page.getParentOffset();
         readPage(currentPagePtr, currentPage);
 
@@ -492,6 +501,7 @@ void BtreeHandler::split(BtreePage page, BtreeNode node)
         // update parent offset of children of new page
         updateParentPtrOfChildren(newPage);
 
+        // recursion
         insertNode(BtreeNode(newPage.getThisPageOffset(), sortedNodes[mid].key, sortedNodes[mid].recordOffset));
     }
 }
